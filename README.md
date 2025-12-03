@@ -18,8 +18,9 @@ Este repositório contém a API backend construída em **FastAPI**, estruturada 
 git clone https://github.com/sua-org/moa-backend.git
 cd moa-backend
 pip install -r requirements.txt
+```
 
-## 📄 Licença e Direitos de Uso
+### 📄 Licença e Direitos de Uso
 
 Este projeto é **propriedade exclusiva da equipe MOA**.
 

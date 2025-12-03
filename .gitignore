@@ -1,0 +1,91 @@
+# -----------------------------------------
+# PYTHON
+# -----------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Distribution / packaging
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Logs
+*.log
+logs/
+*.out
+*.err
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+pytest_cache/
+nosetests.xml
+coverage.xml
+
+# SQLite
+*.db
+*.sqlite3
+
+# -----------------------------------------
+# FASTAPI / UVICORN
+# -----------------------------------------
+# Uvicorn reload cache
+reload/
+# Static uploads
+uploads/
+media/
+
+# -----------------------------------------
+# ENVIRONMENT VARIABLES
+# -----------------------------------------
+.env
+.env.*
+!.env.example
+
+# -----------------------------------------
+# EDITORS & OS FILES
+# -----------------------------------------
+# VSCode
+.vscode/
+.history/
+
+# PyCharm
+.idea/
+*.iml
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# -----------------------------------------
+# DOCKER
+# -----------------------------------------
+docker-compose.override.yml
+.docker/
+Dockerfile~
