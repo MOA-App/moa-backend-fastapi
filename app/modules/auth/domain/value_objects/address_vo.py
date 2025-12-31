@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+from app.modules.auth.domain.value_objects.cep_vo import CEP
+
 @dataclass(frozen=True)
 class Address:
     """Value Object para Endereço Completo"""
@@ -19,13 +21,13 @@ class Address:
             raise ValueError("Cidade deve ter no mínimo 2 caracteres")
         
         # Valida estado (sigla brasileira)
-        estados_validos = [
+        ESTADOS_BR = [
             'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA',
             'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN',
             'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'
         ]
         estado_upper = self.estado.upper().strip()
-        if estado_upper not in estados_validos:
+        if estado_upper not in ESTADOS_BR:
             raise ValueError(f"Estado inválido: {self.estado}")
         
         object.__setattr__(self, 'estado', estado_upper)

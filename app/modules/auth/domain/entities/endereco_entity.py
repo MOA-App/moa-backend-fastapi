@@ -1,11 +1,12 @@
 from dataclasses import dataclass
+from typing import Optional
 
 from ..value_objects.address_vo import Address
 from ..value_objects.cep_vo import CEP
 from app.shared.domain.value_objects.id_vo import EntityId
 
 
-@dataclass
+@dataclass(eq=False)
 class Endereco:
     """Entidade Endereço do Domínio"""
     id: EntityId

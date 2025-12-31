@@ -4,7 +4,7 @@ import re
 
 @dataclass(frozen=True)
 class Password:
-    """Value Object para Password (senha não hasheada)"""
+    """Senha em texto plano (uso temporário)"""
     value: str
     
     def __post_init__(self):

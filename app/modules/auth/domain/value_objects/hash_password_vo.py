@@ -16,4 +16,7 @@ class HashedPassword:
             raise ValueError("Hash de senha inválido")
     
     def __str__(self) -> str:
-        return self.value
+        return "********"
+    
+    def __repr__(self) -> str:
+        return "HashedPassword(********)"

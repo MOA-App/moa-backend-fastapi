@@ -1,6 +1,10 @@
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, List
+
+from app.modules.auth.domain.entities.endereco_entity import Endereco
+from app.modules.auth.domain.entities.permission_entity import Permission
+from app.modules.auth.domain.entities.role_entity import Role
 
 from ..value_objects.email_vo import Email
 from ..value_objects.password_vo import HashedPassword
@@ -9,9 +13,10 @@ from ..value_objects.person_name_vo import PersonName
 from app.shared.domain.value_objects.id_vo import EntityId
 
 
-@dataclass
+@dataclass(eq=False)
 class User:
-    """Entidade de Usuário do Domínio"""
+    """Aggregate Root User"""
+
     id: EntityId
     nome: PersonName
     email: Email
@@ -19,35 +24,33 @@ class User:
     nome_usuario: Username
     id_token_firebase: Optional[str]
     data_cadastro: datetime
-    roles: List['Role'] = field(default_factory=list)
-    enderecos: List['Endereco'] = field(default_factory=list)
-    
-    @staticmethod
+    _roles: List[Role] = field(default_factory=list, repr=False)
+    _enderecos: List[Endereco] = field(default_factory=list, repr=False)
+
+    # ---------- Factories ----------
+
+    @classmethod
     def create(
+        cls,
         nome: str,
         email: str,
         senha_hash: str,
         nome_usuario: str,
         id_token_firebase: Optional[str] = None
-    ) -> 'User':
-        """
-        Factory method para criar um novo usuário.
-        Valida todos os dados através dos Value Objects.
-        """
-        return User(
+    ) -> "User":
+        return cls(
             id=EntityId.generate(),
             nome=PersonName(nome),
             email=Email(email),
             senha=HashedPassword(senha_hash),
             nome_usuario=Username(nome_usuario),
             id_token_firebase=id_token_firebase,
-            data_cadastro=datetime.utcnow(),
-            roles=[],
-            enderecos=[]
+            data_cadastro=datetime.now(timezone.utc)
         )
-    
-    @staticmethod
+
+    @classmethod
     def reconstruct(
+        cls,
         id: EntityId,
         nome: PersonName,
         email: Email,
@@ -55,13 +58,10 @@ class User:
         nome_usuario: Username,
         id_token_firebase: Optional[str],
         data_cadastro: datetime,
-        roles: List['Role'],
-        enderecos: List['Endereco']
-    ) -> 'User':
-        """
-        Reconstrói um usuário existente (usado pelos repositories).
-        """
-        return User(
+        roles: List[Role],
+        enderecos: List[Endereco],
+    ) -> "User":
+        return cls(
             id=id,
             nome=nome,
             email=email,
@@ -69,97 +69,56 @@ class User:
             nome_usuario=nome_usuario,
             id_token_firebase=id_token_firebase,
             data_cadastro=data_cadastro,
-            roles=roles,
-            enderecos=enderecos
+            _roles=list(roles),
+            _enderecos=list(enderecos),
         )
-    
-    # Métodos de Roles
-    def add_role(self, role: 'Role') -> None:
-        """Adiciona uma role ao usuário"""
-        if role not in self.roles:
-            self.roles.append(role)
-    
-    def remove_role(self, role: 'Role') -> None:
-        """Remove uma role do usuário"""
-        if role in self.roles:
-            self.roles.remove(role)
-    
-    def has_role(self, role_name: str) -> bool:
-        """Verifica se usuário tem uma role específica"""
-        return any(role.nome.value == role_name.lower() for role in self.roles)
-    
-    def get_roles(self) -> List[str]:
-        """Retorna lista com nomes das roles"""
-        return [role.nome.value for role in self.roles]
-    
-    # Métodos de Permissions
-    def has_permission(self, permission_name: str) -> bool:
-        """Verifica se usuário tem uma permissão específica"""
-        for role in self.roles:
-            if role.has_permission(permission_name):
-                return True
-        return False
-    
-    def get_all_permissions(self) -> List[str]:
-        """Retorna todas as permissões do usuário (sem duplicatas)"""
-        permissions = set()
-        for role in self.roles:
-            for permission in role.permissions:
-                permissions.add(permission.nome.value)
-        return sorted(list(permissions))
-    
-    # Métodos de Atualização
-    def update_email(self, new_email: str) -> None:
-        """Atualiza o email com validação através do VO"""
-        self.email = Email(new_email)
-    
-    def update_username(self, new_username: str) -> None:
-        """Atualiza o nome de usuário com validação através do VO"""
-        self.nome_usuario = Username(new_username)
-    
-    def update_name(self, new_name: str) -> None:
-        """Atualiza o nome com validação através do VO"""
-        self.nome = PersonName(new_name)
-    
-    def update_password(self, new_hashed_password: str) -> None:
-        """Atualiza a senha (já deve estar hasheada)"""
-        self.senha = HashedPassword(new_hashed_password)
-    
-    def update_firebase_token(self, token: Optional[str]) -> None:
-        """Atualiza o token do Firebase"""
-        self.id_token_firebase = token
-    
-    # Métodos de Endereços
-    def add_endereco(self, endereco: 'Endereco') -> None:
-        """Adiciona um endereço ao usuário"""
-        if endereco not in self.enderecos:
-            self.enderecos.append(endereco)
-    
-    def remove_endereco(self, endereco_id: EntityId) -> bool:
-        """Remove um endereço pelo ID"""
-        for endereco in self.enderecos:
-            if endereco.id == endereco_id:
-                self.enderecos.remove(endereco)
-                return True
-        return False
-    
-    def get_endereco_principal(self) -> Optional['Endereco']:
-        """Retorna o primeiro endereço (considerado principal)"""
-        return self.enderecos[0] if self.enderecos else None
-    
-    # Métodos de Informação
-    def get_first_name(self) -> str:
-        """Retorna o primeiro nome"""
-        return self.nome.get_first_name()
-    
-    def is_active(self) -> bool:
-        """Verifica se o usuário está ativo (pode adicionar lógica futura)"""
-        return True
-    
-    def __eq__(self, other) -> bool:
-        if not isinstance(other, User):
-            return False
-        return self.id == other.id
-    
+
+    # ---------- Roles ----------
+
+    def add_role(self, role: Role) -> None:
+        if role.id in {r.id for r in self._roles}:
+            return
+        self._roles.append(role)
+
+    def remove_role(self, role_id: EntityId) -> None:
+        self._roles = [r for r in self._roles if r.id != role_id]
+
+    def has_role(self, role_name: Role) -> bool:
+        return any(r.nome.value == role_name.lower() for r in self._roles)
+
+    def has_permission(self, permission_name: Permission) -> bool:
+        return any(
+            role.has_permission(permission_name)
+            for role in self._roles
+        )
+
+    @property
+    def roles(self) -> tuple[Role, ...]:
+        return tuple(self._roles)
+
+    # ---------- Endereços ----------
+
+    def add_endereco(self, endereco: Endereco) -> None:
+        if endereco.id in {e.id for e in self._enderecos}:
+            return
+        self._enderecos.append(endereco)
+
+    def remove_endereco(self, endereco_id: EntityId) -> None:
+        self._enderecos = [
+            e for e in self._enderecos if e.id != endereco_id
+        ]
+
+    def get_endereco_principal(self) -> Optional[Endereco]:
+        return self._enderecos[0] if self._enderecos else None
+
+    @property
+    def enderecos(self) -> tuple[Endereco, ...]:
+        return tuple(self._enderecos)
+
+    # ---------- Identity ----------
+
+    def __eq__(self, other: object) -> bool:
+        return isinstance(other, User) and self.id == other.id
+
     def __hash__(self) -> int:
         return hash(self.id)

@@ -5,30 +5,30 @@ import re
 class Username:
     """Value Object para Nome de Usuário"""
     value: str
-    
+
     def __post_init__(self):
         if not self.value:
             raise ValueError("Nome de usuário não pode ser vazio")
-        
-        if len(self.value) < 3:
+
+        normalized = self.value.strip().lower()
+
+        if len(normalized) < 3:
             raise ValueError("Nome de usuário deve ter no mínimo 3 caracteres")
-        
-        if len(self.value) > 50:
+
+        if len(normalized) > 50:
             raise ValueError("Nome de usuário deve ter no máximo 50 caracteres")
-        
-        if not self._is_valid_username(self.value):
+
+        if not self._is_valid_username(normalized):
             raise ValueError(
                 "Nome de usuário deve conter apenas letras, números, "
                 "underscores e hífens"
             )
-        
-        # Normaliza para lowercase
-        object.__setattr__(self, 'value', self.value.lower().strip())
-    
+
+        object.__setattr__(self, "value", normalized)
+
     @staticmethod
     def _is_valid_username(username: str) -> bool:
-        pattern = r'^[a-zA-Z0-9_-]+$'
-        return re.match(pattern, username) is not None
-    
+        return re.match(r"^[a-z0-9_-]+$", username) is not None
+
     def __str__(self) -> str:
         return self.value
