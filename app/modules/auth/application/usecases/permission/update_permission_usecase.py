@@ -1,0 +1,72 @@
+from ....domain.repositories.permission_repository import PermissionRepository
+from ....domain.exceptions.auth_exceptions import (
+    PermissionNotFoundException,
+    RepositoryException
+)
+
+from ..dtos.permission_dto import UpdatePermissionDTO, PermissionResponseDTO
+
+
+class UpdatePermissionUseCase:
+    """
+    Caso de uso para atualizar permissão.
+    
+    Nota: Apenas a descrição pode ser atualizada.
+    Para mudar o nome, deve criar nova permissão.
+    """
+    
+    def __init__(self, permission_repository: PermissionRepository):
+        self.permission_repository = permission_repository
+    
+    async def execute(
+        self,
+        permission_id: str,
+        dto: UpdatePermissionDTO
+    ) -> PermissionResponseDTO:
+        """
+        Atualiza descrição da permissão.
+        
+        Args:
+            permission_id: UUID da permissão
+            dto: Dados a atualizar
+            
+        Returns:
+            PermissionResponseDTO: Permissão atualizada
+            
+        Raises:
+            PermissionNotFoundException: Permissão não encontrada
+        """
+        try:
+            entity_id = EntityId.from_string(permission_id)
+        except ValueError:
+            raise PermissionNotFoundException(permission_id)
+        
+        try:
+            # Buscar permissão
+            permission = await self.permission_repository.find_by_id(entity_id)
+            
+            if not permission:
+                raise PermissionNotFoundException(permission_id)
+            
+            # Atualizar descrição (retorna nova instância por ser imutável)
+            updated_permission = permission.update_description(dto.descricao)
+            
+            # Persistir
+            saved = await self.permission_repository.update(updated_permission)
+            
+            return PermissionResponseDTO(
+                id=saved.id.value,
+                nome=saved.nome.value,
+                descricao=saved.descricao,
+                data_criacao=saved.data_criacao,
+                resource=saved.get_resource(),
+                action=saved.get_action()
+            )
+            
+        except PermissionNotFoundException:
+            raise
+        except Exception as e:
+            raise RepositoryException(
+                operation="atualizar permissão",
+                details=str(e)
+            )
