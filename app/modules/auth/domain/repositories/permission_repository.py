@@ -144,6 +144,19 @@ class PermissionRepository(ABC):
 
 
     @abstractmethod
-    async def list_actions(self, resource: str) -> List[str]:
+    async def list_actions(self, resource: PermissionResource) -> List[str]:
         """Lista ações disponíveis para um recurso"""
+        pass
+
+    @abstractmethod
+    async def find_by_names(self, names: List[PermissionName]) -> List[Permission]:
+        pass
+
+
+    @abstractmethod
+    async def count(self) -> int:
+        pass
+
+    @abstractmethod
+    async def count_by_resource(self, resource: PermissionResource) -> int:
         pass
