@@ -1,9 +1,7 @@
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field
 from typing import Optional, List
 from uuid import UUID
 from datetime import datetime
-import re
-
 
 class PermissionResponseDTO(BaseModel):
     """DTO de resposta para Permission"""

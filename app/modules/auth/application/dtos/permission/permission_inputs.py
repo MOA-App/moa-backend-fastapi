@@ -1,13 +1,7 @@
 from pydantic import BaseModel, Field, field_validator
-from typing import Optional, List
+from typing import Optional
 from uuid import UUID
-from datetime import datetime
 import re
-
-
-# ============================================================================
-# INPUT DTOs (Request)
-# ============================================================================
 
 class CreatePermissionDTO(BaseModel):
     """

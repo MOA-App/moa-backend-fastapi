@@ -1,11 +1,10 @@
+from app.modules.auth.application.dtos.permission.permission_outputs import PermissionResponseDTO
 from app.shared.domain.value_objects.id_vo import EntityId
 from ....domain.repositories.permission_repository import PermissionRepository
 from ....domain.exceptions.auth_exceptions import (
     PermissionNotFoundException,
     RepositoryException
 )
-
-from ..dtos.permission_dto import PermissionResponseDTO
 
 
 class GetPermissionUseCase:

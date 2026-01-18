@@ -1,4 +1,5 @@
-from typing import Optional
+from app.modules.auth.application.dtos.permission.permission_inputs import CreatePermissionDTO
+from app.modules.auth.application.dtos.permission.permission_outputs import PermissionResponseDTO
 
 from ....domain.repositories.permission_repository import PermissionRepository
 from ....domain.entities.permission_entity import Permission
@@ -9,7 +10,6 @@ from ....domain.exceptions.auth_exceptions import (
     RepositoryException
 )
 
-from ..dtos.permission_dto import CreatePermissionDTO, PermissionResponseDTO
 
 
 class CreatePermissionUseCase:

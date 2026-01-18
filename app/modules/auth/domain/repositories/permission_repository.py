@@ -134,3 +134,14 @@ class PermissionRepository(ABC):
             RepositoryException: Erro ao deletar no banco
         """
         pass
+
+    @abstractmethod
+    async def list_resources(self) -> List[str]:
+        """Lista todos os recursos distintos"""
+        pass
+
+
+    @abstractmethod
+    async def list_actions(self, resource: str) -> List[str]:
+        """Lista ações disponíveis para um recurso"""
+        pass

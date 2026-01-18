@@ -1,14 +1,13 @@
 from typing import List
 
+from app.modules.auth.application.dtos.permission.permission_bulk import BulkCreatePermissionsDTO
+from app.modules.auth.application.dtos.permission.permission_outputs import PermissionResponseDTO
+from app.modules.auth.application.dtos.permission.permission_queries import BulkCreatePermissionsResponseDTO
+from app.modules.auth.domain.exceptions.auth_exceptions import DomainValidationException, PermissionAlreadyExistsException, RepositoryException
+
 from ....domain.repositories.permission_repository import PermissionRepository
 from ....domain.entities.permission_entity import Permission
 from ....domain.value_objects.permission_name_vo import PermissionName
-
-from ..dtos.permission_dto import (
-    BulkCreatePermissionsDTO,
-    BulkCreatePermissionsResponseDTO,
-    PermissionResponseDTO
-)
 
 
 class BulkCreatePermissionsUseCase:
@@ -64,12 +63,13 @@ class BulkCreatePermissionsUseCase:
                     )
                 )
                 
-            except Exception as e:
-                errors.append({
-                    "nome": perm_dto.nome,
-                    "error": str(e)
-                })
-        
+            except DomainValidationException as e:
+                errors.append({"nome": perm_dto.nome, "error": str(e)})
+            except PermissionAlreadyExistsException:
+                skipped.append(perm_dto.nome)
+            except RepositoryException as e:
+                errors.append({"nome": perm_dto.nome, "error": "Erro interno"})
+                    
         return BulkCreatePermissionsResponseDTO(
             created=created,
             skipped=skipped,

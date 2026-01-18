@@ -3,8 +3,6 @@ from typing import List
 
 from app.modules.auth.application.dtos.permission.permission_inputs import CreatePermissionDTO
 
-
-
 class BulkCreatePermissionsDTO(BaseModel):
     """DTO para criar múltiplas permissões de uma vez"""
     permissions: List[CreatePermissionDTO] = Field(

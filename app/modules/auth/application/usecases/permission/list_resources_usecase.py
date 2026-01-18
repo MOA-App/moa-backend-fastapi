@@ -1,7 +1,8 @@
 from typing import List
 
+from app.modules.auth.application.dtos.permission.permission_outputs import ResourceActionsDTO
+
 from ....domain.repositories.permission_repository import PermissionRepository
-from ..dtos.permission_dto import ResourceActionsDTO
 
 
 class ListResourcesUseCase:
