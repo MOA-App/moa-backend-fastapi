@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from typing import Optional, List
 
+from app.modules.auth.domain.value_objects.permission_resource_vo import PermissionResource
+
 from ..entities.permission_entity import Permission
 from ..value_objects.permission_name_vo import PermissionName
 from app.shared.domain.value_objects.id_vo import EntityId
@@ -88,7 +90,7 @@ class PermissionRepository(ABC):
         pass
 
     @abstractmethod
-    async def list_by_resource(self, resource: str) -> List[Permission]:
+    async def list_by_resource(self, resource: PermissionResource) -> List[Permission]:
         """
         Lista permissões associadas a um recurso específico
         (ex: 'users', 'roles').

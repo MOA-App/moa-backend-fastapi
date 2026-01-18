@@ -3,6 +3,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, exists, func, distinct
 from sqlalchemy.orm import selectinload
 
+from app.modules.auth.infrastructure.models.permission_model import PermissionModel
+
 from ...domain.repositories.permission_repository import PermissionRepository
 from ...domain.entities.permission_entity import Permission
 from ...domain.value_objects.permission_name_vo import PermissionName
@@ -12,7 +14,7 @@ from ...domain.exceptions.auth_exceptions import (
 )
 from app.shared.domain.value_objects.id_vo import EntityId
 
-from ..models.user_model import PermissionModel, RoleModel, role_permissions
+
 from ..mappers.permission_mapper import PermissionMapper
 
 import logging
@@ -380,7 +382,7 @@ class PermissionRepositoryImpl(PermissionRepository):
         """
         try:
             # Buscar todos os nomes de permissões
-            stmt = select(PermissionModel.nome)
+            stmt = select(func.split_part(PermissionModel.nome, '.', 1).distinct())
             result = await self.session.execute(stmt)
             names = result.scalars().all()
             
@@ -425,7 +427,7 @@ class PermissionRepositoryImpl(PermissionRepository):
             resource_lower = resource.lower()
             
             # Buscar permissões do recurso
-            stmt = select(PermissionModel.nome).where(
+            stmt = select(func.split_part(PermissionModel.nome, '.', 1).distinct()).where(
                 PermissionModel.nome.like(f"{resource_lower}.%")
             )
             

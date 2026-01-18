@@ -1,0 +1,2 @@
+class PermissionResource(str):
+    pass

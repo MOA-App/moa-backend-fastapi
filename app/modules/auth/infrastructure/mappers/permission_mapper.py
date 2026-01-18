@@ -1,8 +1,8 @@
+from app.modules.auth.infrastructure.models.permission_model import PermissionModel
 from ...domain.entities.permission_entity import Permission
 from ...domain.value_objects.permission_name_vo import PermissionName
 from app.shared.domain.value_objects.id_vo import EntityId
-
-from ..models.user_model import PermissionModel
+from typing import List
 
 
 class PermissionMapper:
@@ -62,7 +62,6 @@ class PermissionMapper:
             model: PermissionModel existente
             entity: Permission entity com dados atualizados
         """
-        model.nome = entity.nome.value
         model.descricao = entity.descricao
     
     @staticmethod
@@ -77,7 +76,3 @@ class PermissionMapper:
             List[Permission]: Lista de entities
         """
         return [PermissionMapper.to_entity(model) for model in models]
-
-
-# Imports necessários
-from typing import List
