@@ -17,52 +17,11 @@ class CreatePermissionRequest(BaseModel):
         max_length=500,
         description="Descrição detalhada da permissão"
     )
-    
-    @field_validator('nome')
+
+    @field_validator("nome")
     @classmethod
-    def validate_nome_format(cls, v: str) -> str:
-        """Valida formato resource.action"""
-        v = v.strip().lower()
-        
-        if '.' not in v:
-            raise ValueError(
-                "Nome deve estar no formato 'resource.action' (ex: users.create)"
-            )
-        
-        parts = v.split('.')
-        if len(parts) != 2:
-            raise ValueError(
-                "Nome deve conter exatamente um ponto separando resource e action"
-            )
-        
-        resource, action = parts
-        
-        if not resource or not action:
-            raise ValueError(
-                "Resource e action não podem ser vazios"
-            )
-        
-        # Valida caracteres permitidos
-        if not resource.replace('_', '').isalnum():
-            raise ValueError(
-                "Resource deve conter apenas letras, números e underscores"
-            )
-        
-        if not action.replace('_', '').isalnum():
-            raise ValueError(
-                "Action deve conter apenas letras, números e underscores"
-            )
-        
-        return v
-    
-    @field_validator('descricao')
-    @classmethod
-    def validate_descricao(cls, v: Optional[str]) -> Optional[str]:
-        """Valida e normaliza descrição"""
-        if v is not None:
-            v = v.strip()
-            return v if v else None
-        return v
+    def normalize_nome(cls, v: str) -> str:
+        return v.strip().lower()
 
     class Config:
         json_schema_extra = {

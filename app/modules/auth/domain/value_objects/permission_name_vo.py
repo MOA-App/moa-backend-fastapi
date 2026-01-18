@@ -3,6 +3,7 @@ import re
 from typing import List
 
 from app.modules.auth.domain.exceptions.auth_exceptions import InvalidPermissionFormatException
+from app.modules.auth.domain.value_objects.permission_resource_vo import PermissionResource
 
 
 @dataclass(frozen=True, eq=True)  # ← Adicionar eq=True
@@ -66,7 +67,8 @@ class PermissionName:
         pattern = r"^[a-z0-9_]+$"
         return all(re.match(pattern, part) for part in parts)
 
-    def get_resource(self) -> str:
+    @property
+    def resource(self) -> PermissionResource:
         """
         Retorna o recurso da permissão (tudo antes da última parte).
         
@@ -75,9 +77,10 @@ class PermissionName:
             admin.users.delete -> admin.users
         """
         parts = self.value.split(".")
-        return ".".join(parts[:-1])
+        return PermissionResource(self.get_base_resource())
 
-    def get_action(self) -> str:
+    @property
+    def action(self) -> str:
         """
         Retorna a ação da permissão (última parte).
         
