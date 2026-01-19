@@ -29,12 +29,10 @@ class ListPermissionsUseCase:
     ) -> List[PermissionResponseDTO]:
         """
         Lista permissões com filtros opcionais.
-        
-        Args:
-            query: Parâmetros de busca e paginação
-            
-        Returns:
-            List[PermissionResponseDTO]: Lista de permissões
+
+        TODO: Retornar PaginatedResult[PermissionResponseDTO]
+              quando paginação completa for oficializada
+              (total, page, page_size).
         """
         try:
             # Se filtro por recurso
