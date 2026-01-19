@@ -18,7 +18,7 @@ class CreatePermissionUseCase:
         permission_name = PermissionName(dto.nome)
 
         # 2. Verificar existência
-        if await self.permission_repository.find_by_name(permission_name):
+        if await self.permission_repository.exists_by_name(permission_name):
             raise PermissionAlreadyExistsException(permission_name.value)
 
         # 3. Criar entidade (VO, não string)

@@ -11,7 +11,7 @@ class PermissionByResourceResponse(BaseModel):
         ..., 
         description="Lista de permissões do recurso"
     )
-    count: int = Field(..., description="Quantidade de permissões")
+    total: int = Field(..., description="Quantidade de permissões")
 
     class Config:
         json_schema_extra = {
@@ -27,6 +27,6 @@ class PermissionByResourceResponse(BaseModel):
                         "data_criacao": "2024-01-15T10:30:00Z"
                     }
                 ],
-                "count": 4
+                "total": 4
             }
         }

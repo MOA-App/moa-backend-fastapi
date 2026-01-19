@@ -1,3 +1,4 @@
+from ast import stmt
 from typing import Optional, List
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, exists, func, distinct
@@ -384,22 +385,7 @@ class PermissionRepositoryImpl(PermissionRepository):
             # Buscar todos os nomes de permissões
             stmt = select(func.split_part(PermissionModel.nome, '.', 1).distinct())
             result = await self.session.execute(stmt)
-            names = result.scalars().all()
-            
-            # Extrair recursos únicos (primeira parte antes do ponto)
-            resources = set()
-            for name in names:
-                parts = name.split(".")
-                if len(parts) >= 2:
-                    # Se tem múltiplos níveis, pegar a primeira parte
-                    # users.create -> users
-                    # admin.users.create -> admin
-                    resources.add(parts[0])
-            
-            result_list = sorted(list(resources))
-            logger.debug(f"Found {len(result_list)} unique resources")
-            
-            return result_list
+            return sorted(result.scalars().all())
             
         except Exception as e:
             logger.error(f"Error listing resources: {e}")
@@ -427,7 +413,7 @@ class PermissionRepositoryImpl(PermissionRepository):
             resource_lower = resource.lower()
             
             # Buscar permissões do recurso
-            stmt = select(func.split_part(PermissionModel.nome, '.', 1).distinct()).where(
+            stmt = select(func.split_part(PermissionModel.nome, '.', -1).distinct()).where(
                 PermissionModel.nome.like(f"{resource_lower}.%")
             )
             

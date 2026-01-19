@@ -31,20 +31,6 @@ def get_permission_repository(
     return PermissionRepositoryImpl(db)
 
 
-def get_role_repository(
-    db: AsyncSession = Depends(get_db)
-) -> RoleRepositoryImpl:
-    """Dependency para obter Role Repository"""
-    return RoleRepositoryImpl(db)
-
-
-def get_user_repository(
-    db: AsyncSession = Depends(get_db)
-) -> UserRepositoryImpl:
-    """Dependency para obter User Repository"""
-    return UserRepositoryImpl(db)
-
-
 # ============================================================================
 # USE CASE DEPENDENCIES - CRUD
 # ============================================================================
@@ -100,81 +86,3 @@ def get_list_resources_usecase(
 ) -> ListResourcesUseCase:
     """Dependency para ListResourcesUseCase"""
     return ListResourcesUseCase(permission_repo)
-
-
-# ============================================================================
-# USE CASE DEPENDENCIES - ROLE OPERATIONS
-# ============================================================================
-
-def get_assign_permission_to_role_usecase(
-    permission_repo: PermissionRepositoryImpl = Depends(get_permission_repository),
-    role_repo: RoleRepositoryImpl = Depends(get_role_repository)
-) -> AssignPermissionToRoleUseCase:
-    """Dependency para AssignPermissionToRoleUseCase"""
-    return AssignPermissionToRoleUseCase(permission_repo, role_repo)
-
-
-def get_revoke_permission_from_role_usecase(
-    permission_repo: PermissionRepositoryImpl = Depends(get_permission_repository),
-    role_repo: RoleRepositoryImpl = Depends(get_role_repository)
-) -> RevokePermissionFromRoleUseCase:
-    """Dependency para RevokePermissionFromRoleUseCase"""
-    return RevokePermissionFromRoleUseCase(permission_repo, role_repo)
-
-
-def get_role_permissions_usecase(
-    role_repo: RoleRepositoryImpl = Depends(get_role_repository)
-) -> GetRolePermissionsUseCase:
-    """Dependency para GetRolePermissionsUseCase"""
-    return GetRolePermissionsUseCase(role_repo)
-
-
-# ============================================================================
-# USE CASE DEPENDENCIES - USER OPERATIONS
-# ============================================================================
-
-def get_check_user_permission_usecase(
-    user_repo: UserRepositoryImpl = Depends(get_user_repository)
-) -> CheckUserPermissionUseCase:
-    """Dependency para CheckUserPermissionUseCase"""
-    return CheckUserPermissionUseCase(user_repo)
-
-
-def get_user_permissions_usecase(
-    user_repo: UserRepositoryImpl = Depends(get_user_repository)
-) -> GetUserPermissionsUseCase:
-    """Dependency para GetUserPermissionsUseCase"""
-    return GetUserPermissionsUseCase(user_repo)
-
-
-# ============================================================================
-# HELPER FUNCTIONS
-# ============================================================================
-
-def get_all_permission_usecases(
-    permission_repo: PermissionRepositoryImpl = Depends(get_permission_repository),
-    role_repo: RoleRepositoryImpl = Depends(get_role_repository),
-    user_repo: UserRepositoryImpl = Depends(get_user_repository)
-) -> dict:
-    """
-    Retorna dicionário com todos os use cases de Permission.
-    
-    Útil para cenários onde múltiplos use cases são necessários.
-    
-    Returns:
-        dict: Dicionário com use cases
-    """
-    return {
-        "create": CreatePermissionUseCase(permission_repo),
-        "get": GetPermissionUseCase(permission_repo),
-        "list": ListPermissionsUseCase(permission_repo),
-        "update": UpdatePermissionUseCase(permission_repo),
-        "delete": DeletePermissionUseCase(permission_repo),
-        "bulk_create": BulkCreatePermissionsUseCase(permission_repo),
-        "list_resources": ListResourcesUseCase(permission_repo),
-        "assign_to_role": AssignPermissionToRoleUseCase(permission_repo, role_repo),
-        "revoke_from_role": RevokePermissionFromRoleUseCase(permission_repo, role_repo),
-        "get_role_permissions": GetRolePermissionsUseCase(role_repo),
-        "check_user_permission": CheckUserPermissionUseCase(user_repo),
-        "get_user_permissions": GetUserPermissionsUseCase(user_repo),
-    }

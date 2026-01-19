@@ -1,65 +1,45 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Query
-from typing import List, Optional
+from typing import List
 from uuid import UUID
 
-from ...application.dtos.permission_dto import (
-    CreatePermissionDTO,
-    UpdatePermissionDTO,
-    PermissionResponseDTO,
-    PermissionSummaryDTO,
-    PermissionDetailDTO,
-    PermissionsByResourceDTO,
-    ResourceActionsDTO,
-    PermissionStatsDTO,
-    BulkCreatePermissionsDTO,
-    BulkCreatePermissionsResponseDTO,
-    AssignPermissionToRoleDTO,
-    RevokePermissionFromRoleDTO,
-    ListPermissionsQueryDTO
-)
-from ...application.dtos.response_dto import MessageResponseDTO, ErrorResponseDTO
-from ...application.dtos.user_response_dto import UserResponseDTO
+from app.modules.auth.application.dtos.permission.permission_bulk import BulkCreatePermissionsDTO
+from app.modules.auth.application.dtos.permission.permission_inputs import CreatePermissionDTO, UpdatePermissionDTO
+from app.modules.auth.application.usecases.permission.bulk_create_permissions_usecase import BulkCreatePermissionsUseCase
+from app.modules.auth.application.usecases.permission.create_permission_usecase import CreatePermissionUseCase
+from app.modules.auth.application.usecases.permission.delete_permission_usecase import DeletePermissionUseCase
+from app.modules.auth.application.usecases.permission.get_permission_usecase import GetPermissionUseCase
+from app.modules.auth.application.usecases.permission.list_permissions_usecase import ListPermissionsUseCase
+from app.modules.auth.application.usecases.permission.list_resources_usecase import ListResourcesUseCase
+from app.modules.auth.application.usecases.permission.update_permission_usecase import UpdatePermissionUseCase
+from app.modules.auth.presentation.schemas.permission.bulk_create_request_schema import BulkCreatePermissionsRequest
+from app.modules.auth.presentation.schemas.permission.bulk_create_response_schema import BulkCreatePermissionsResponse
+from app.modules.auth.presentation.schemas.permission.create_permission_schema import CreatePermissionRequest
+from app.modules.auth.presentation.schemas.permission.error_response_schema import ErrorResponse
+from app.modules.auth.presentation.schemas.permission.list_permissions_schema import ListPermissionsQuery
+from app.modules.auth.presentation.schemas.permission.message_response_schema import MessageResponse
+from app.modules.auth.presentation.schemas.permission.permission_by_resource_response import PermissionByResourceResponse
+from app.modules.auth.presentation.schemas.permission.permission_list_response import PermissionListMeta, PermissionListResponse
+from app.modules.auth.presentation.schemas.permission.permission_response import PermissionResponse
+from app.modules.auth.presentation.schemas.permission.permission_stats_schema import PermissionStats
+from app.modules.auth.presentation.schemas.permission.resource_actions_schema import ResourceActions
+from app.modules.auth.presentation.schemas.permission.update_permission_schema import UpdatePermissionRequest
 
-from ...application.usecases.create_permission_usecase import CreatePermissionUseCase
-from ...application.usecases.get_permission_usecase import GetPermissionUseCase
-from ...application.usecases.list_permissions_usecase import ListPermissionsUseCase
-from ...application.usecases.update_permission_usecase import UpdatePermissionUseCase
-from ...application.usecases.delete_permission_usecase import DeletePermissionUseCase
-from ...application.usecases.bulk_create_permissions_usecase import BulkCreatePermissionsUseCase
-from ...application.usecases.list_resources_usecase import ListResourcesUseCase
-from ...application.usecases.assign_permission_to_role_usecase import AssignPermissionToRoleUseCase
-from ...application.usecases.revoke_permission_from_role_usecase import RevokePermissionFromRoleUseCase
-from ...application.usecases.get_role_permissions_usecase import GetRolePermissionsUseCase
-from ...application.usecases.check_user_permission_usecase import CheckUserPermissionUseCase
-from ...application.usecases.get_user_permissions_usecase import GetUserPermissionsUseCase
-
-from ..dependencies.permission_deps import (
-    get_create_permission_usecase,
-    get_get_permission_usecase,
-    get_list_permissions_usecase,
-    get_update_permission_usecase,
-    get_delete_permission_usecase,
-    get_bulk_create_permissions_usecase,
-    get_list_resources_usecase,
-    get_assign_permission_to_role_usecase,
-    get_revoke_permission_from_role_usecase,
-    get_get_role_permissions_usecase,
-    get_check_user_permission_usecase,
-    get_get_user_permissions_usecase
-)
 
 from ..dependencies.auth_deps import (
-    get_current_user,
-    require_permission,
-    require_any_permission
+    get_bulk_create_permissions_usecase,
+    get_create_permission_usecase,
+    get_delete_permission_usecase,
+    get_list_permissions_usecase,
+    get_list_resources_usecase,
+    get_permission_usecase,
+    get_update_permission_usecase,
+    require_permission
 )
 
 from ...domain.exceptions.auth_exceptions import (
-    PermissionAlreadyExistsException,
-    PermissionNotFoundException,
-    RoleNotFoundException,
     DomainValidationException,
-    RepositoryException
+    PermissionAlreadyExistsException,
+    PermissionNotFoundException
 )
 
 import logging
@@ -76,26 +56,23 @@ router = APIRouter(prefix="/permissions", tags=["Permissions"])
 
 @router.post(
     "",
-    response_model=PermissionResponseDTO,
+    response_model=PermissionResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Criar nova permissão",
     description="Cria uma nova permissão no sistema. Requer permissão: permissions.create",
     responses={
         201: {"description": "Permissão criada com sucesso"},
-        400: {
-            "description": "Dados inválidos ou permissão já existe",
-            "model": ErrorResponseDTO
-        },
+        400: {"model": ErrorResponse},
         401: {"description": "Não autenticado"},
         403: {"description": "Sem permissão: permissions.create"},
         422: {"description": "Erro de validação"}
     }
 )
 async def create_permission(
-    dto: CreatePermissionDTO,
+    body: CreatePermissionRequest,
     usecase: CreatePermissionUseCase = Depends(get_create_permission_usecase),
-    current_user: UserResponseDTO = Depends(require_permission("permissions.create"))
-) -> PermissionResponseDTO:
+    _: None = Depends(require_permission("permissions.create"))
+) -> PermissionResponse:
     """
     Cria uma nova permissão.
     
@@ -115,7 +92,12 @@ async def create_permission(
     ```
     """
     try:
-        logger.info(f"Creating permission: {dto.nome} by user {current_user.id}")
+        #logger.info(f"Creating permission: {dto.nome} by user {current_user.id}")
+        dto = CreatePermissionDTO(
+            nome=body.nome,
+            descricao=body.descricao
+        )
+
         permission = await usecase.execute(dto)
         logger.info(f"Permission created successfully: {permission.id}")
         return permission
@@ -142,68 +124,39 @@ async def create_permission(
 
 @router.get(
     "",
-    response_model=List[PermissionResponseDTO],
+    response_model=PermissionListResponse,
     summary="Listar permissões",
     description="Lista permissões com filtros opcionais. Requer: permissions.read",
-    responses={
-        200: {"description": "Lista de permissões"},
-        401: {"description": "Não autenticado"},
-        403: {"description": "Sem permissão: permissions.read"}
-    }
 )
 async def list_permissions(
-    resource: Optional[str] = Query(
-        None,
-        description="Filtrar por recurso específico",
-        example="users"
-    ),
-    search: Optional[str] = Query(
-        None,
-        min_length=1,
-        max_length=100,
-        description="Buscar em nome ou descrição"
-    ),
-    page: int = Query(1, ge=1, description="Número da página"),
-    page_size: int = Query(20, ge=1, le=100, description="Itens por página"),
+    query: ListPermissionsQuery = Depends(),
     usecase: ListPermissionsUseCase = Depends(get_list_permissions_usecase),
-    current_user: UserResponseDTO = Depends(require_permission("permissions.read"))
-) -> List[PermissionResponseDTO]:
-    """
-    Lista permissões com filtros e paginação.
-    
-    **Filtros disponíveis**:
-    - `resource`: Filtrar por recurso (ex: users, posts)
-    - `search`: Buscar em nome ou descrição
-    - `page`: Número da página (padrão: 1)
-    - `page_size`: Itens por página (padrão: 20, max: 100)
-    
-    **Exemplo**: `/permissions?resource=users&page=1&page_size=10`
-    """
+    _: None = Depends(require_permission("permissions.read"))
+) -> PermissionListResponse:
     try:
-        query = ListPermissionsQueryDTO(
-            resource=resource,
-            search=search,
-            page=page,
-            page_size=page_size
+        result = await usecase.execute(query)
+
+        return PermissionListResponse(
+            data=result.items,
+            meta=PermissionListMeta(
+                total=result.total,
+                page=query.page,
+                limit=query.limit,
+                total_pages=result.total_pages
+            )
         )
-        
-        logger.info(f"Listing permissions with filters: resource={resource}, search={search}")
-        permissions = await usecase.execute(query)
-        logger.info(f"Found {len(permissions)} permissions")
-        
-        return permissions
-        
+
     except Exception as e:
         logger.error(f"Error listing permissions: {e}", exc_info=True)
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            status_code=500,
             detail={"error": "internal_error", "message": "Erro ao listar permissões"}
         )
 
 
 @router.get(
     "/{permission_id}",
-    response_model=PermissionResponseDTO,
+    response_model=PermissionResponse,
     summary="Obter permissão por ID",
     description="Retorna detalhes de uma permissão específica. Requer: permissions.read",
     responses={
@@ -215,9 +168,9 @@ async def list_permissions(
 )
 async def get_permission(
     permission_id: UUID,
-    usecase: GetPermissionUseCase = Depends(get_get_permission_usecase),
-    current_user: UserResponseDTO = Depends(require_permission("permissions.read"))
-) -> PermissionResponseDTO:
+    usecase: GetPermissionUseCase = Depends(get_permission_usecase),
+    _: None = Depends(require_permission("permissions.read"))
+) -> PermissionResponse:
     """
     Retorna detalhes de uma permissão específica.
     
@@ -245,7 +198,7 @@ async def get_permission(
 
 @router.put(
     "/{permission_id}",
-    response_model=PermissionResponseDTO,
+    response_model=PermissionResponse,
     summary="Atualizar permissão",
     description="Atualiza descrição de uma permissão. Requer: permissions.update",
     responses={
@@ -257,10 +210,10 @@ async def get_permission(
 )
 async def update_permission(
     permission_id: UUID,
-    dto: UpdatePermissionDTO,
+    body: UpdatePermissionRequest,
     usecase: UpdatePermissionUseCase = Depends(get_update_permission_usecase),
-    current_user: UserResponseDTO = Depends(require_permission("permissions.update"))
-) -> PermissionResponseDTO:
+    _: None = Depends(require_permission("permissions.update"))
+) -> PermissionResponse:
     """
     Atualiza descrição de uma permissão.
     
@@ -276,6 +229,7 @@ async def update_permission(
     """
     try:
         logger.info(f"Updating permission: {permission_id}")
+        dto = UpdatePermissionDTO(descricao=body.descricao)
         permission = await usecase.execute(str(permission_id), dto)
         logger.info(f"Permission updated successfully: {permission_id}")
         return permission
@@ -296,7 +250,7 @@ async def update_permission(
 
 @router.delete(
     "/{permission_id}",
-    response_model=MessageResponseDTO,
+    response_model=MessageResponse,
     summary="Deletar permissão",
     description="Remove uma permissão do sistema. Requer: permissions.delete",
     responses={
@@ -309,8 +263,8 @@ async def update_permission(
 async def delete_permission(
     permission_id: UUID,
     usecase: DeletePermissionUseCase = Depends(get_delete_permission_usecase),
-    current_user: UserResponseDTO = Depends(require_permission("permissions.delete"))
-) -> MessageResponseDTO:
+    _: None = Depends(require_permission("permissions.delete"))
+) -> MessageResponse:
     """
     Deleta uma permissão do sistema.
     
@@ -322,7 +276,7 @@ async def delete_permission(
         await usecase.execute(str(permission_id))
         logger.info(f"Permission deleted successfully: {permission_id}")
         
-        return MessageResponseDTO(
+        return MessageResponse(
             message=f"Permissão {permission_id} deletada com sucesso"
         )
         
@@ -346,7 +300,7 @@ async def delete_permission(
 
 @router.post(
     "/bulk",
-    response_model=BulkCreatePermissionsResponseDTO,
+    response_model=BulkCreatePermissionsResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Criar múltiplas permissões",
     description="Cria várias permissões de uma vez. Requer: permissions.create",
@@ -357,10 +311,10 @@ async def delete_permission(
     }
 )
 async def bulk_create_permissions(
-    dto: BulkCreatePermissionsDTO,
+    body: BulkCreatePermissionsRequest,
     usecase: BulkCreatePermissionsUseCase = Depends(get_bulk_create_permissions_usecase),
-    current_user: UserResponseDTO = Depends(require_permission("permissions.create"))
-) -> BulkCreatePermissionsResponseDTO:
+    _: None = Depends(require_permission("permissions.create"))
+) -> BulkCreatePermissionsResponse:
     """
     Cria múltiplas permissões em lote.
     
@@ -393,6 +347,16 @@ async def bulk_create_permissions(
     ```
     """
     try:
+        dto = BulkCreatePermissionsDTO(
+            permissions=[
+                CreatePermissionDTO(
+                    nome=p.nome,
+                    descricao=p.descricao
+                )
+                for p in body.permissions
+            ]
+        )
+
         logger.info(f"Bulk creating {len(dto.permissions)} permissions")
         result = await usecase.execute(dto)
         logger.info(
@@ -426,7 +390,7 @@ async def bulk_create_permissions(
 )
 async def list_resources(
     usecase: ListResourcesUseCase = Depends(get_list_resources_usecase),
-    current_user: UserResponseDTO = Depends(require_permission("permissions.read"))
+    _: None = Depends(require_permission("permissions.read"))
 ) -> List[str]:
     """
     Lista todos os recursos que possuem permissões cadastradas.
@@ -449,15 +413,15 @@ async def list_resources(
 
 @router.get(
     "/resources/{resource}/actions",
-    response_model=ResourceActionsDTO,
+    response_model=ResourceActions,
     summary="Listar ações de um recurso",
     description="Lista ações disponíveis para um recurso. Requer: permissions.read"
 )
 async def get_resource_actions(
     resource: str,
     usecase: ListResourcesUseCase = Depends(get_list_resources_usecase),
-    current_user: UserResponseDTO = Depends(require_permission("permissions.read"))
-) -> ResourceActionsDTO:
+    _: None = Depends(require_permission("permissions.read"))
+) -> ResourceActions:
     """
     Lista todas as ações disponíveis para um recurso específico.
     
@@ -491,14 +455,14 @@ async def get_resource_actions(
 
 @router.get(
     "/grouped-by-resource",
-    response_model=List[PermissionsByResourceDTO],
+    response_model=List[PermissionByResourceResponse],
     summary="Permissões agrupadas por recurso",
     description="Retorna permissões agrupadas por recurso. Requer: permissions.read"
 )
 async def get_permissions_grouped_by_resource(
     usecase: ListPermissionsUseCase = Depends(get_list_permissions_usecase),
-    current_user: UserResponseDTO = Depends(require_permission("permissions.read"))
-) -> List[PermissionsByResourceDTO]:
+    _: None = Depends(require_permission("permissions.read"))
+) -> List[PermissionByResourceResponse]:
     """
     Retorna permissões agrupadas por recurso.
     
@@ -530,301 +494,13 @@ async def get_permissions_grouped_by_resource(
             detail={"error": "internal_error", "message": "Erro ao agrupar permissões"}
         )
 
-
-# ============================================================================
-# ROLE PERMISSION ENDPOINTS
-# ============================================================================
-
-@router.post(
-    "/assign-to-role",
-    response_model=MessageResponseDTO,
-    summary="Atribuir permissão a role",
-    description="Atribui uma permissão a uma role. Requer: permissions.assign",
-    responses={
-        200: {"description": "Permissão atribuída"},
-        404: {"description": "Permissão ou role não encontrada"},
-        401: {"description": "Não autenticado"},
-        403: {"description": "Sem permissão: permissions.assign"}
-    }
-)
-async def assign_permission_to_role(
-    dto: AssignPermissionToRoleDTO,
-    usecase: AssignPermissionToRoleUseCase = Depends(get_assign_permission_to_role_usecase),
-    current_user: UserResponseDTO = Depends(require_permission("permissions.assign"))
-) -> MessageResponseDTO:
-    """
-    Atribui uma permissão a uma role.
-    
-    **Exemplo**:
-    ```json
-    {
-        "role_id": "123e4567-e89b-12d3-a456-426614174000",
-        "permission_id": "987fcdeb-51a2-43f7-9876-543210fedcba"
-    }
-    ```
-    """
-    try:
-        logger.info(f"Assigning permission {dto.permission_id} to role {dto.role_id}")
-        result = await usecase.execute(dto)
-        logger.info("Permission assigned successfully")
-        return result
-        
-    except (PermissionNotFoundException, RoleNotFoundException) as e:
-        logger.warning(f"Not found: {e}")
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail={"error": "not_found", "message": str(e)}
-        )
-    except Exception as e:
-        logger.error(f"Error assigning permission: {e}", exc_info=True)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail={"error": "internal_error", "message": "Erro ao atribuir permissão"}
-        )
-
-
-@router.post(
-    "/revoke-from-role",
-    response_model=MessageResponseDTO,
-    summary="Remover permissão de role",
-    description="Remove uma permissão de uma role. Requer: permissions.revoke",
-    responses={
-        200: {"description": "Permissão removida"},
-        404: {"description": "Permissão ou role não encontrada"},
-        401: {"description": "Não autenticado"},
-        403: {"description": "Sem permissão: permissions.revoke"}
-    }
-)
-async def revoke_permission_from_role(
-    dto: RevokePermissionFromRoleDTO,
-    usecase: RevokePermissionFromRoleUseCase = Depends(get_revoke_permission_from_role_usecase),
-    current_user: UserResponseDTO = Depends(require_permission("permissions.revoke"))
-) -> MessageResponseDTO:
-    """
-    Remove uma permissão de uma role.
-    
-    **Exemplo**:
-    ```json
-    {
-        "role_id": "123e4567-e89b-12d3-a456-426614174000",
-        "permission_id": "987fcdeb-51a2-43f7-9876-543210fedcba"
-    }
-    ```
-    """
-    try:
-        logger.info(f"Revoking permission {dto.permission_id} from role {dto.role_id}")
-        result = await usecase.execute(dto)
-        logger.info("Permission revoked successfully")
-        return result
-        
-    except (PermissionNotFoundException, RoleNotFoundException) as e:
-        logger.warning(f"Not found: {e}")
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail={"error": "not_found", "message": str(e)}
-        )
-    except Exception as e:
-        logger.error(f"Error revoking permission: {e}", exc_info=True)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail={"error": "internal_error", "message": "Erro ao remover permissão"}
-        )
-
-
-@router.get(
-    "/role/{role_id}",
-    response_model=List[PermissionResponseDTO],
-    summary="Obter permissões de uma role",
-    description="Lista permissões de uma role específica. Requer: permissions.read",
-    responses={
-        200: {"description": "Lista de permissões da role"},
-        404: {"description": "Role não encontrada"},
-        401: {"description": "Não autenticado"},
-        403: {"description": "Sem permissão"}
-    }
-)
-async def get_role_permissions(
-    role_id: UUID,
-    usecase: GetRolePermissionsUseCase = Depends(get_get_role_permissions_usecase),
-    current_user: UserResponseDTO = Depends(require_permission("permissions.read"))
-) -> List[PermissionResponseDTO]:
-    """
-    Lista todas as permissões de uma role específica.
-    
-    **Path Parameter**:
-    - `role_id`: UUID da role
-    """
-    try:
-        logger.info(f"Getting permissions for role: {role_id}")
-        permissions = await usecase.execute(str(role_id))
-        logger.info(f"Found {len(permissions)} permissions for role")
-        return permissions
-        
-    except RoleNotFoundException as e:
-        logger.warning(f"Role not found: {role_id}")
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail={"error": "role_not_found", "message": str(e)}
-        )
-    except Exception as e:
-        logger.error(f"Error getting role permissions: {e}", exc_info=True)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail={"error": "internal_error", "message": "Erro ao buscar permissões"}
-        )
-
-
-# ============================================================================
-# USER PERMISSION ENDPOINTS
-# ============================================================================
-
-@router.get(
-    "/user/{user_id}",
-    response_model=List[PermissionResponseDTO],
-    summary="Obter permissões de um usuário",
-    description="Lista todas as permissões de um usuário (via roles). Requer: permissions.read",
-    responses={
-        200: {"description": "Lista de permissões do usuário"},
-        404: {"description": "Usuário não encontrado"},
-        401: {"description": "Não autenticado"},
-        403: {"description": "Sem permissão"}
-    }
-)
-async def get_user_permissions(
-    user_id: UUID,
-    usecase: GetUserPermissionsUseCase = Depends(get_get_user_permissions_usecase),
-    current_user: UserResponseDTO = Depends(
-        require_any_permission("permissions.read", "users.read")
-    )
-) -> List[PermissionResponseDTO]:
-    """
-    Lista todas as permissões de um usuário (agregadas de todas as suas roles).
-    
-    **Path Parameter**:
-    - `user_id`: UUID do usuário
-    
-    **Retorna**: Lista de permissões únicas (sem duplicatas)
-    """
-    try:
-        logger.info(f"Getting permissions for user: {user_id}")
-        permissions = await usecase.execute(str(user_id))
-        logger.info(f"User has {len(permissions)} permissions")
-        return permissions
-        
-    except Exception as e:
-        logger.error(f"Error getting user permissions: {e}", exc_info=True)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail={"error": "internal_error", "message": "Erro ao buscar permissões"}
-        )
-
-
-@router.get(
-    "/user/{user_id}/check/{permission_name}",
-    response_model=dict,
-    summary="Verificar se usuário tem permissão",
-    description="Verifica se um usuário possui uma permissão específica",
-    responses={
-        200: {"description": "Resultado da verificação"},
-        404: {"description": "Usuário não encontrado"},
-        401: {"description": "Não autenticado"}
-    }
-)
-async def check_user_permission(
-    user_id: UUID,
-    permission_name: str,
-    usecase: CheckUserPermissionUseCase = Depends(get_check_user_permission_usecase),
-    current_user: UserResponseDTO = Depends(get_current_user)
-) -> dict:
-    """
-    Verifica se um usuário possui uma permissão específica.
-    
-    **Path Parameters**:
-    - `user_id`: UUID do usuário
-    - `permission_name`: Nome da permissão (ex: users.create)
-    
-    **Resposta**:
-    ```json
-    {
-        "user_id": "uuid",
-        "permission": "users.create",
-        "has_permission": true
-    }
-    ```
-    
-    **Nota**: Usuários podem verificar suas próprias permissões.
-    Para verificar de outros usuários, requer: permissions.read
-    """
-    try:
-        # Verificar se está checando próprias permissões ou de outro usuário
-        if str(user_id) != str(current_user.id):
-            # Verificar se tem permissão para checar de outros
-            if not any(
-                perm.nome == "permissions.read"
-                for role in current_user.roles
-                for perm in role.permissions
-            ):
-                raise HTTPException(
-                    status_code=status.HTTP_403_FORBIDDEN,
-                    detail={"error": "forbidden", "message": "Sem permissão"}
-                )
-        
-        logger.info(f"Checking if user {user_id} has permission {permission_name}")
-        has_permission = await usecase.execute(str(user_id), permission_name)
-        
-        return {
-            "user_id": str(user_id),
-            "permission": permission_name,
-            "has_permission": has_permission
-        }
-        
-    except Exception as e:
-        logger.error(f"Error checking permission: {e}", exc_info=True)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail={"error": "internal_error", "message": "Erro ao verificar permissão"}
-        )
-
-
-@router.get(
-    "/me",
-    response_model=List[PermissionResponseDTO],
-    summary="Minhas permissões",
-    description="Lista todas as permissões do usuário autenticado",
-    responses={
-        200: {"description": "Lista de permissões"},
-        401: {"description": "Não autenticado"}
-    }
-)
-async def get_my_permissions(
-    usecase: GetUserPermissionsUseCase = Depends(get_get_user_permissions_usecase),
-    current_user: UserResponseDTO = Depends(get_current_user)
-) -> List[PermissionResponseDTO]:
-    """
-    Lista todas as permissões do usuário autenticado.
-    
-    Útil para verificar quais ações o usuário pode realizar.
-    """
-    try:
-        logger.info(f"Getting permissions for current user: {current_user.id}")
-        permissions = await usecase.execute(str(current_user.id))
-        return permissions
-        
-    except Exception as e:
-        logger.error(f"Error getting my permissions: {e}", exc_info=True)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail={"error": "internal_error", "message": "Erro ao buscar permissões"}
-        )
-
-
 # ============================================================================
 # STATISTICS & REPORTS
 # ============================================================================
 
 @router.get(
     "/stats",
-    response_model=PermissionStatsDTO,
+    response_model=PermissionStats,
     summary="Estatísticas de permissões",
     description="Retorna estatísticas sobre permissões. Requer: permissions.read",
     responses={
@@ -836,8 +512,8 @@ async def get_my_permissions(
 async def get_permission_stats(
     list_usecase: ListPermissionsUseCase = Depends(get_list_permissions_usecase),
     resources_usecase: ListResourcesUseCase = Depends(get_list_resources_usecase),
-    current_user: UserResponseDTO = Depends(require_permission("permissions.read"))
-) -> PermissionStatsDTO:
+    _: None = Depends(require_permission("permissions.read"))
+) -> PermissionStats:
     """
     Retorna estatísticas gerais sobre permissões.
     
@@ -859,7 +535,7 @@ async def get_permission_stats(
         # TODO: Implementar "most_used_permissions" quando tiver o método no repository
         most_used = []
         
-        stats = PermissionStatsDTO(
+        stats = PermissionStats(
             total_permissions=len(all_permissions),
             total_resources=len(resources),
             resources=resources,
