@@ -73,7 +73,7 @@ class PermissionModel(Base, TimestampMixin):
         secondary="role_permissions",
         back_populates="permissions",
         lazy="selectin",  # Evita N+1 queries
-        cascade="all, delete"
+        cascade="save-update"
     )
     
     # ========================================================================
@@ -94,17 +94,3 @@ class PermissionModel(Base, TimestampMixin):
         """Representação string amigável"""
         return f"Permission: {self.nome}"
     
-    def to_dict(self) -> dict:
-        """
-        Converte model para dicionário.
-        
-        Útil para serialização e debugging.
-        """
-        return {
-            "id": str(self.id),
-            "nome": self.nome,
-            "descricao": self.descricao,
-            "data_criacao": self.data_criacao.isoformat() if self.data_criacao else None,
-            "created_at": self.created_at.isoformat() if self.created_at else None,
-            "updated_at": self.updated_at.isoformat() if self.updated_at else None,
-        }

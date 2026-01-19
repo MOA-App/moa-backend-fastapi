@@ -79,7 +79,7 @@ def get_create_permission_usecase(
     return CreatePermissionUseCase(permission_repo)
 
 
-def get_get_permission_usecase(
+def get_permission_usecase(
     permission_repo: PermissionRepositoryImpl = Depends(get_permission_repository)
 ) -> GetPermissionUseCase:
     """Dependency para GetPermissionUseCase"""
@@ -145,7 +145,7 @@ def get_revoke_permission_from_role_usecase(
     return RevokePermissionFromRoleUseCase(permission_repo, role_repo)
 
 
-def get_get_role_permissions_usecase(
+def get_role_permissions_usecase(
     role_repo: RoleRepositoryImpl = Depends(get_role_repository)
 ) -> GetRolePermissionsUseCase:
     """Dependency para GetRolePermissionsUseCase"""
@@ -163,7 +163,7 @@ def get_check_user_permission_usecase(
     return CheckUserPermissionUseCase(user_repo)
 
 
-def get_get_user_permissions_usecase(
+def get_user_permissions_usecase(
     user_repo: UserRepositoryImpl = Depends(get_user_repository)
 ) -> GetUserPermissionsUseCase:
     """Dependency para GetUserPermissionsUseCase"""

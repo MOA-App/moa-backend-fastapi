@@ -2,6 +2,7 @@ from dataclasses import dataclass, replace
 from datetime import datetime, timezone
 from typing import Optional
 
+from app.modules.auth.domain.value_objects.permission_resource_vo import PermissionResource
 from app.shared.domain.value_objects.id_vo import EntityId
 from ..value_objects.permission_name_vo import PermissionName
 
@@ -21,15 +22,18 @@ class Permission:
     data_criacao: datetime
 
     @classmethod
-    def create(cls, nome: str, descricao: Optional[str] = None) -> "Permission":
-        """Factory method para criar nova permissão"""
+    def create(
+        cls,
+        nome: PermissionName,
+        descricao: Optional[str] = None
+    ) -> "Permission":
         return cls(
             id=EntityId.generate(),
-            nome=PermissionName(nome),
+            nome=nome,
             descricao=descricao,
             data_criacao=datetime.now(timezone.utc),
         )
-
+    
     @classmethod
     def reconstruct(
         cls,
@@ -51,22 +55,10 @@ class Permission:
             Permission: Nova instância com descrição atualizada
         """
         return replace(self, descricao=new_description)
-    
-    def change_name(self, new_name: str) -> "Permission":
-        """
-        Altera nome da permissão (retorna nova instância).
-        
-        Args:
-            new_name: Novo nome no formato resource.action
-            
-        Returns:
-            Permission: Nova instância com nome atualizado
-        """
-        return replace(self, nome=PermissionName(new_name))
 
-    def is_for_resource(self, resource: str) -> bool:
+    def is_for_resource(self,  resource: PermissionResource) -> bool:
         """Verifica se permissão pertence a um recurso específico"""
-        return self.nome.get_resource() == resource.lower()
+        return self.nome.resource == resource
 
     def is_action(self, action: str) -> bool:
         """Verifica se permissão representa uma ação específica"""
@@ -101,11 +93,11 @@ class Permission:
         """Retorna nome completo da permissão"""
         return self.nome.value
     
-    def get_resource(self) -> str:
+    def resource(self) -> str:
         """Retorna recurso da permissão"""
         return self.nome.get_resource()
     
-    def get_action(self) -> str:
+    def action(self) -> str:
         """Retorna ação da permissão"""
         return self.nome.get_action()
 
