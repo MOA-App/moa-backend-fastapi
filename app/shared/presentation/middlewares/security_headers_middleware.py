@@ -1,3 +1,5 @@
+from fastapi import Request
+from starlette.middleware.base import BaseHTTPMiddleware
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     """
     Middleware que adiciona headers de segurança.

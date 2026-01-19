@@ -1,4 +1,4 @@
-from typing import Any, Optional, Dict
+from typing import Any, Optional
 from datetime import datetime, timezone
 from fastapi import Response, status
 from fastapi.responses import JSONResponse

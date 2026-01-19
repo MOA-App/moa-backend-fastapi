@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
-from fastapi.openapi.docs import get_swagger_ui_html
+from starlette.exceptions import HTTPException as StarletteHTTPException
 from contextlib import asynccontextmanager
 import logging
 
@@ -10,64 +10,42 @@ from app.shared.presentation.middlewares.request_id_middleware import RequestIdM
 from app.shared.presentation.middlewares.security_headers_middleware import SecurityHeadersMiddleware
 from app.modules.auth.presentation.setup import setup_auth_module
 
-# Configurar logging
+# -----------------------------------------------------------------------------
+# LOGGING
+# -----------------------------------------------------------------------------
+
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
 
+# -----------------------------------------------------------------------------
+# LIFESPAN
+# -----------------------------------------------------------------------------
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """
-    Lifecycle events da aplicação.
-    """
-    # Startup
     logger.info("🚀 Starting application...")
     logger.info(f"📝 Environment: {settings.ENVIRONMENT}")
-    logger.info(f"🗄️  Database: {settings.DATABASE_URL.split('@')[1] if '@' in settings.DATABASE_URL else 'Not configured'}")
-    
-    # Aqui você pode adicionar:
-    # - Criar tabelas no banco (ou usar Alembic)
-    # - Inicializar cache (Redis)
-    # - Carregar configurações
-    
+    logger.info(
+        f"🗄️  Database: "
+        f"{settings.DATABASE_URL.split('@')[1] if '@' in settings.DATABASE_URL else 'Not configured'}"
+    )
+
     yield
-    
-    # Shutdown
+
     logger.info("🛑 Shutting down application...")
-    # Aqui você pode adicionar:
-    # - Fechar conexões
-    # - Limpar recursos
 
 
-# Criar aplicação FastAPI
+# -----------------------------------------------------------------------------
+# APP
+# -----------------------------------------------------------------------------
+
 app = FastAPI(
     title=settings.APP_NAME,
-    description="""
-    ## 🔐 API de Autenticação com Clean Architecture
-    
-    Sistema completo de autenticação e autorização com:
-    - Registro e login de usuários
-    - Autenticação JWT
-    - Sistema RBAC (Role-Based Access Control)
-    - Validação em múltiplas camadas
-    - Clean Architecture
-    
-    ### 📚 Recursos
-    - **Users**: Gerenciamento de usuários
-    - **Roles**: Gerenciamento de papéis/funções
-    - **Permissions**: Gerenciamento de permissões
-    - **Authentication**: Login, registro, tokens JWT
-    
-    ### 🔑 Autenticação
-    Para acessar endpoints protegidos:
-    1. Faça login em `/auth/login`
-    2. Copie o `access_token` da resposta
-    3. Use o botão "Authorize" (🔓) acima
-    4. Digite: `Bearer {seu_token}`
-    """,
+    description="API de Autenticação com Clean Architecture",
     version=settings.VERSION,
     lifespan=lifespan,
     docs_url="/docs" if settings.DEBUG else None,
@@ -75,106 +53,89 @@ app = FastAPI(
     openapi_url="/openapi.json" if settings.DEBUG else None,
 )
 
-# ============================================================================
-# MIDDLEWARES
-# ============================================================================
 
-# CORS
+# -----------------------------------------------------------------------------
+# GLOBAL MIDDLEWARES
+# -----------------------------------------------------------------------------
+
 setup_cors(app)
-
-# Request ID
 app.add_middleware(RequestIdMiddleware)
-
-# Security Headers
 app.add_middleware(SecurityHeadersMiddleware)
 
-# ============================================================================
-# MODULES
-# ============================================================================
 
-# Setup Auth Module (inclui routers, middlewares e exception handlers)
+# -----------------------------------------------------------------------------
+# MODULES
+# -----------------------------------------------------------------------------
+
 setup_auth_module(app)
 
-# Aqui você pode adicionar outros módulos:
+# setup_users_module(app)
 # setup_products_module(app)
-# setup_orders_module(app)
 
-# ============================================================================
+
+# -----------------------------------------------------------------------------
 # ROOT ENDPOINTS
-# ============================================================================
+# -----------------------------------------------------------------------------
 
-@app.get(
-    "/",
-    tags=["Root"],
-    summary="Root endpoint",
-    description="Informações básicas da API"
-)
+@app.get("/", tags=["Root"])
 async def root():
-    """Endpoint raiz da API"""
     return {
         "app": settings.APP_NAME,
         "version": settings.VERSION,
         "environment": settings.ENVIRONMENT,
-        "docs": "/docs" if settings.DEBUG else "Disabled in production",
-        "health": "/health"
+        "docs": "/docs" if settings.DEBUG else "Disabled",
+        "health": "/health",
     }
 
 
-@app.get(
-    "/health",
-    tags=["Health"],
-    summary="Health check",
-    description="Verifica se a API está funcionando"
-)
+@app.get("/health", tags=["Health"])
 async def health_check():
-    """Health check endpoint"""
     return {
         "status": "healthy",
         "version": settings.VERSION,
-        "environment": settings.ENVIRONMENT
+        "environment": settings.ENVIRONMENT,
     }
 
 
-# ============================================================================
-# ERROR HANDLERS
-# ============================================================================
+# -----------------------------------------------------------------------------
+# GLOBAL EXCEPTION HANDLERS
+# -----------------------------------------------------------------------------
 
-@app.exception_handler(404)
-async def not_found_handler(request: Request, exc):
-    """Handler para rotas não encontradas"""
+@app.exception_handler(StarletteHTTPException)
+async def http_exception_handler(request: Request, exc: StarletteHTTPException):
     return JSONResponse(
-        status_code=404,
+        status_code=exc.status_code,
         content={
-            "error": "not_found",
-            "message": f"Rota {request.url.path} não encontrada"
-        }
+            "success": False,
+            "error": exc.detail,
+            "path": request.url.path,
+        },
     )
 
 
-@app.exception_handler(500)
-async def internal_error_handler(request: Request, exc):
-    """Handler para erros internos"""
-    logger.error(f"Internal error: {exc}", exc_info=True)
+@app.exception_handler(Exception)
+async def unhandled_exception_handler(request: Request, exc: Exception):
+    logger.error("Unhandled exception", exc_info=True)
     return JSONResponse(
         status_code=500,
         content={
-            "error": "internal_server_error",
-            "message": "Erro interno do servidor"
-        }
+            "success": False,
+            "error": "Internal server error",
+        },
     )
 
 
-# ============================================================================
-# STARTUP
-# ============================================================================
+# -----------------------------------------------------------------------------
+# ENTRYPOINT (DEV)
+# -----------------------------------------------------------------------------
 
 if __name__ == "__main__":
     import uvicorn
-    
+
     uvicorn.run(
         "app.main:app",
         host=settings.HOST,
         port=settings.PORT,
         reload=settings.DEBUG,
-        log_level="info"
+        log_level="info",
     )

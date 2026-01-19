@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, status
 from typing import List
 from uuid import UUID
 
@@ -14,7 +14,6 @@ from app.modules.auth.application.usecases.permission.update_permission_usecase 
 from app.modules.auth.presentation.schemas.permission.bulk_create_request_schema import BulkCreatePermissionsRequest
 from app.modules.auth.presentation.schemas.permission.bulk_create_response_schema import BulkCreatePermissionsResponse
 from app.modules.auth.presentation.schemas.permission.create_permission_schema import CreatePermissionRequest
-from app.modules.auth.presentation.schemas.permission.error_response_schema import ErrorResponse
 from app.modules.auth.presentation.schemas.permission.list_permissions_schema import ListPermissionsQuery
 from app.modules.auth.presentation.schemas.permission.message_response_schema import MessageResponse
 from app.modules.auth.presentation.schemas.permission.permission_by_resource_response import PermissionByResourceResponse
