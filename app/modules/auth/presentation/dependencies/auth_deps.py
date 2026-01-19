@@ -1,47 +1,24 @@
+from fastapi import Depends
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.modules.auth.application.usecases.permission.bulk_create_permissions_usecase import BulkCreatePermissionsUseCase
+from app.modules.auth.application.usecases.permission.create_permission_usecase import CreatePermissionUseCase
+from app.modules.auth.application.usecases.permission.delete_permission_usecase import DeletePermissionUseCase
+from app.modules.auth.application.usecases.permission.get_permission_usecase import GetPermissionUseCase
+from app.modules.auth.application.usecases.permission.list_permissions_usecase import ListPermissionsUseCase
+from app.modules.auth.application.usecases.permission.list_resources_usecase import ListResourcesUseCase
+from app.modules.auth.application.usecases.permission.update_permission_usecase import UpdatePermissionUseCase
+from app.shared.infrastructure.database.session import get_db
+
+# Repositories
+from ...infrastructure.repositories.permission_repository_impl import PermissionRepositoryImpl
+
 """
 Dependencies (Injeção de Dependências) para Permission.
 
 Responsável por criar e fornecer instâncias dos Use Cases
 com suas dependências (repositories, services, etc.)
 """
-from fastapi import Depends
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from app.shared.infrastructure.database.session import get_db
-
-# Repositories
-from ...infrastructure.repositories.permission_repository_impl import (
-    PermissionRepositoryImpl
-)
-from ...infrastructure.repositories.role_repository_impl import RoleRepositoryImpl
-from ...infrastructure.repositories.user_repository_impl import UserRepositoryImpl
-
-# Use Cases
-from ...application.usecases.create_permission_usecase import CreatePermissionUseCase
-from ...application.usecases.get_permission_usecase import GetPermissionUseCase
-from ...application.usecases.list_permissions_usecase import ListPermissionsUseCase
-from ...application.usecases.update_permission_usecase import UpdatePermissionUseCase
-from ...application.usecases.delete_permission_usecase import DeletePermissionUseCase
-from ...application.usecases.bulk_create_permissions_usecase import (
-    BulkCreatePermissionsUseCase
-)
-from ...application.usecases.list_resources_usecase import ListResourcesUseCase
-from ...application.usecases.assign_permission_to_role_usecase import (
-    AssignPermissionToRoleUseCase
-)
-from ...application.usecases.revoke_permission_from_role_usecase import (
-    RevokePermissionFromRoleUseCase
-)
-from ...application.usecases.get_role_permissions_usecase import (
-    GetRolePermissionsUseCase
-)
-from ...application.usecases.check_user_permission_usecase import (
-    CheckUserPermissionUseCase
-)
-from ...application.usecases.get_user_permissions_usecase import (
-    GetUserPermissionsUseCase
-)
-
 
 # ============================================================================
 # REPOSITORY DEPENDENCIES
