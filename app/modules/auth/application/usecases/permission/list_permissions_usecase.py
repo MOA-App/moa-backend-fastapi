@@ -2,6 +2,7 @@ from typing import List, Optional
 
 from app.modules.auth.application.dtos.permission.permission_outputs import PermissionResponseDTO, PermissionSummaryDTO, PermissionsByResourceDTO
 from app.modules.auth.application.dtos.permission.permission_queries import ListPermissionsQueryDTO
+from app.modules.auth.application.mappers.permission_mapper import PermissionMapper
 from app.modules.auth.domain.entities.permission_entity import Permission
 
 from ....domain.repositories.permission_repository import PermissionRepository
@@ -60,7 +61,10 @@ class ListPermissionsUseCase:
                 permissions = permissions[start:end]
             
             # Converter para DTOs
-            return [self._to_response_dto(p) for p in permissions]
+            return [
+                PermissionMapper.to_summary_dto(permission)
+                for permission in permissions
+            ]
             
         except Exception as e:
             raise RepositoryException(
@@ -72,7 +76,10 @@ class ListPermissionsUseCase:
         """Lista permissões de um recurso específico"""
         try:
             permissions = await self.permission_repository.list_by_resource(resource)
-            return [self._to_response_dto(p) for p in permissions]
+            return [
+                PermissionMapper.to_summary_dto(permission)
+                for permission in permissions
+            ]
         except Exception as e:
             raise RepositoryException(
                 operation=f"listar permissões do recurso {resource}",

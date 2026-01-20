@@ -1,4 +1,5 @@
 from app.modules.auth.application.dtos.permission.permission_outputs import PermissionResponseDTO
+from app.modules.auth.application.mappers.permission_mapper import PermissionMapper
 from app.shared.domain.value_objects.id_vo import EntityId
 from ....domain.repositories.permission_repository import PermissionRepository
 from ....domain.exceptions.auth_exceptions import (
@@ -37,14 +38,8 @@ class GetPermissionUseCase:
             if not permission:
                 raise PermissionNotFoundException(permission_id)
             
-            return PermissionResponseDTO(
-                id=permission.id.value,
-                nome=permission.nome.value,
-                descricao=permission.descricao,
-                data_criacao=permission.data_criacao,
-                resource=permission.get_resource(),
-                action=permission.get_action()
-            )
+            return PermissionMapper.to_response_dto(permission)
+
             
         except PermissionNotFoundException:
             raise

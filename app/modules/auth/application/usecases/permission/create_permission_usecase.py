@@ -1,5 +1,6 @@
 from app.modules.auth.application.dtos.permission.permission_inputs import CreatePermissionDTO
 from app.modules.auth.application.dtos.permission.permission_outputs import PermissionResponseDTO
+from app.modules.auth.application.mappers.permission_mapper import PermissionMapper
 
 from ....domain.repositories.permission_repository import PermissionRepository
 from ....domain.entities.permission_entity import Permission
@@ -30,12 +31,5 @@ class CreatePermissionUseCase:
         # 4. Persistir
         created = await self.permission_repository.create(permission)
 
-        # 5. Retornar DTO
-        return PermissionResponseDTO(
-            id=str(created.id.value),
-            nome=created.nome.value,
-            descricao=created.descricao,
-            data_criacao=created.data_criacao,
-            resource=str(created.nome.resource),
-            action=created.nome.action,
-        )
+        # 5. Retornar
+        return PermissionMapper.to_response_dto(created)
