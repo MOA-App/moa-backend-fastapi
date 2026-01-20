@@ -1,3 +1,7 @@
+from fastapi import logger
+from app.shared.infrastructure.database.session import DatabaseSession
+
+
 async def check_database_health() -> dict:
     """
     Verifica saúde da conexão com banco de dados.

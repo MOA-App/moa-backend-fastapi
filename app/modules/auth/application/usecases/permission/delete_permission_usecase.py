@@ -1,6 +1,6 @@
 from app.modules.auth.domain.exceptions.auth_exceptions import PermissionNotFoundException, RepositoryException
 from app.modules.auth.domain.repositories.permission_repository import PermissionRepository
-from app.modules.auth.domain.value_objects.id_vo import EntityId
+from app.shared.domain.value_objects.id_vo import EntityId
 
 
 class DeletePermissionUseCase:

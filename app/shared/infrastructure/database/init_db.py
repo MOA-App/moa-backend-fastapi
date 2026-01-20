@@ -1,5 +1,5 @@
-from sqlalchemy.ext.asyncio import AsyncSession
 from app.shared.infrastructure.database.base import Base
+from app.modules.auth.infrastructure.models.permission_model import PermissionModel
 from app.shared.infrastructure.database.session import DatabaseSession
 import logging
 

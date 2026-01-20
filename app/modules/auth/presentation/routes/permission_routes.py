@@ -11,6 +11,7 @@ from app.modules.auth.application.usecases.permission.get_permission_usecase imp
 from app.modules.auth.application.usecases.permission.list_permissions_usecase import ListPermissionsUseCase
 from app.modules.auth.application.usecases.permission.list_resources_usecase import ListResourcesUseCase
 from app.modules.auth.application.usecases.permission.update_permission_usecase import UpdatePermissionUseCase
+from app.modules.auth.presentation.dependencies.permissions import require_permission
 from app.modules.auth.presentation.schemas.permission.bulk_create_request_schema import BulkCreatePermissionsRequest
 from app.modules.auth.presentation.schemas.permission.bulk_create_response_schema import BulkCreatePermissionsResponse
 from app.modules.auth.presentation.schemas.permission.create_permission_schema import CreatePermissionRequest
@@ -32,7 +33,6 @@ from ..dependencies.auth_deps import (
     get_list_resources_usecase,
     get_permission_usecase,
     get_update_permission_usecase,
-    require_permission
 )
 
 router = APIRouter(prefix="/permissions", tags=["Permissions"])

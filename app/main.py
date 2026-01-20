@@ -8,7 +8,7 @@ from app.core.config import settings
 from app.shared.presentation.middlewares.cors_middleware import setup_cors
 from app.shared.presentation.middlewares.request_id_middleware import RequestIdMiddleware
 from app.shared.presentation.middlewares.security_headers_middleware import SecurityHeadersMiddleware
-from app.modules.auth.presentation.setup import setup_auth_module
+from app.modules.auth.setup import setup_auth_module
 
 # -----------------------------------------------------------------------------
 # LOGGING

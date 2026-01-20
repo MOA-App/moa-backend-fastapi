@@ -15,3 +15,4 @@ from .permission_bulk import (
     BulkCreatePermissionsDTO,
     BulkCreatePermissionsResponseDTO,
 )
+BulkCreatePermissionsDTO

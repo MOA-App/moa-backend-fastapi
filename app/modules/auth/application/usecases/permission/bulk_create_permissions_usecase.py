@@ -2,7 +2,7 @@ from typing import List
 
 from app.modules.auth.application.dtos.permission.permission_bulk import BulkCreatePermissionsDTO
 from app.modules.auth.application.dtos.permission.permission_outputs import PermissionResponseDTO
-from app.modules.auth.application.dtos.permission.permission_queries import BulkCreatePermissionsResponseDTO
+from app.modules.auth.application.dtos.permission.permission_bulk import BulkCreatePermissionsResponseDTO
 from app.modules.auth.domain.exceptions.auth_exceptions import InvalidPermissionFormatException, RepositoryException
 
 from ....domain.repositories.permission_repository import PermissionRepository

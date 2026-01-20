@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     PORT: int = 8000
     
     # Database
-    DATABASE_URL: str = "postgresql+asyncpg://user:password@localhost:5432/auth_db"
+    DATABASE_URL: str = "postgresql+asyncpg://user:password@localhost:5432/moa_db"
     DB_ECHO: bool = False
     DB_POOL_SIZE: int = 5
     DB_MAX_OVERFLOW: int = 10

@@ -3,8 +3,6 @@ from sqlalchemy import Column, DateTime
 from datetime import datetime
 
 Base = declarative_base()
-
-
 class TimestampMixin:
     """
     Mixin para adicionar timestamps de criação e atualização.

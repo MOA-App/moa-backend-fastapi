@@ -61,7 +61,6 @@ class PermissionRepositoryImpl(PermissionRepository):
             return self.mapper.to_entity(model)
             
         except Exception as e:
-            logger.error(f"Error creating permission: {e}")
             raise RepositoryException(
                 operation="criar permissão",
                 details=str(e)

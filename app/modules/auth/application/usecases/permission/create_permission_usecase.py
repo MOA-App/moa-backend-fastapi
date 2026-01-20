@@ -32,10 +32,10 @@ class CreatePermissionUseCase:
 
         # 5. Retornar DTO
         return PermissionResponseDTO(
-            id=created.id.value,
+            id=str(created.id.value),
             nome=created.nome.value,
             descricao=created.descricao,
             data_criacao=created.data_criacao,
-            resource=str(created.nome.get_resource()),
-            action=created.nome.get_action()
+            resource=str(created.nome.resource),
+            action=created.nome.action,
         )

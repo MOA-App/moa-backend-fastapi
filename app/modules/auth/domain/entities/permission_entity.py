@@ -62,7 +62,7 @@ class Permission:
 
     def is_action(self, action: str) -> bool:
         """Verifica se permissão representa uma ação específica"""
-        return self.nome.get_action() == action.lower()
+        return self.nome.action() == action.lower()
     
     def matches(self, pattern: str) -> bool:
         """
@@ -80,11 +80,11 @@ class Permission:
         
         resource_match = (
             resource_pattern == "*" or 
-            self.nome.get_resource() == resource_pattern
+            self.nome.resource() == resource_pattern
         )
         action_match = (
             action_pattern == "*" or 
-            self.nome.get_action() == action_pattern
+            self.nome.action() == action_pattern
         )
         
         return resource_match and action_match
@@ -95,11 +95,11 @@ class Permission:
     
     def resource(self) -> str:
         """Retorna recurso da permissão"""
-        return self.nome.get_resource()
+        return self.nome.resource()
     
     def action(self) -> str:
         """Retorna ação da permissão"""
-        return self.nome.get_action()
+        return self.nome.action()
 
     # ---------- Identity ----------
 
