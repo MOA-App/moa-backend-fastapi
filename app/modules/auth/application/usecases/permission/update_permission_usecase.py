@@ -1,5 +1,6 @@
 from app.modules.auth.application.dtos.permission.permission_inputs import UpdatePermissionDTO
 from app.modules.auth.application.dtos.permission.permission_outputs import PermissionResponseDTO
+from app.modules.auth.application.mappers.permission_mapper import PermissionMapper
 from app.shared.domain.value_objects.id_vo import EntityId
 from ....domain.repositories.permission_repository import PermissionRepository
 from ....domain.exceptions.auth_exceptions import (
@@ -55,14 +56,7 @@ class UpdatePermissionUseCase:
             # Persistir
             saved = await self.permission_repository.update(updated_permission)
             
-            return PermissionResponseDTO(
-                id=saved.id.value,
-                nome=saved.nome.value,
-                descricao=saved.descricao,
-                data_criacao=saved.data_criacao,
-                resource=saved.get_resource(),
-                action=saved.get_action()
-            )
+            return PermissionMapper.to_response_dto(saved)
             
         except PermissionNotFoundException:
             raise
