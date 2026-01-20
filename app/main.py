@@ -9,6 +9,11 @@ from app.shared.presentation.middlewares.cors_middleware import setup_cors
 from app.shared.presentation.middlewares.request_id_middleware import RequestIdMiddleware
 from app.shared.presentation.middlewares.security_headers_middleware import SecurityHeadersMiddleware
 from app.modules.auth.setup import setup_auth_module
+from app.modules.products.presentation.routes.category_routes import router as category_router
+
+# Importar modelos para que o Base.metadata conheça as tabelas
+from app.modules.products.infrastructure.models.category_model import CategoryModel
+
 
 # -----------------------------------------------------------------------------
 # LOGGING
@@ -64,10 +69,11 @@ app.add_middleware(SecurityHeadersMiddleware)
 
 
 # -----------------------------------------------------------------------------
-# MODULES
+# MODULES / ROUTERS
 # -----------------------------------------------------------------------------
 
 setup_auth_module(app)
+app.include_router(category_router, prefix="/api/v1")
 
 # setup_users_module(app)
 # setup_products_module(app)
