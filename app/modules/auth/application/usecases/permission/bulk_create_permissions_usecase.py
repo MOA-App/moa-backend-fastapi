@@ -44,8 +44,8 @@ class BulkCreatePermissionsUseCase:
                         nome=saved.nome.value,
                         descricao=saved.descricao,
                         data_criacao=saved.data_criacao,
-                        resource=str(saved.nome.get_resource()),
-                        action=saved.nome.get_action()
+                        resource=saved.nome.get_base_resource(),
+                        action=saved.nome.action
                     )
                 )
 
