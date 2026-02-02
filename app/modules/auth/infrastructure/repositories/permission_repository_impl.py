@@ -4,15 +4,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, exists, func, distinct
 from sqlalchemy.orm import selectinload
 
+from app.modules.auth.infrastructure.exceptions.repository_exception import RepositoryException
 from app.modules.auth.infrastructure.models.permission_model import PermissionModel
 
 from ...domain.repositories.permission_repository import PermissionRepository
 from ...domain.entities.permission_entity import Permission
 from ...domain.value_objects.permission_name_vo import PermissionName
-from ...domain.exceptions.auth_exceptions import (
-    PermissionNotFoundException,
-    RepositoryException
-)
+from ...domain.exceptions.auth_exceptions import PermissionNotFoundException
+
 from app.shared.domain.value_objects.id_vo import EntityId
 
 

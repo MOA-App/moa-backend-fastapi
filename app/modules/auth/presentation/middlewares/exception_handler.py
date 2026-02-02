@@ -11,8 +11,8 @@ from app.modules.auth.domain.exceptions.auth_exceptions import (
     DomainValidationException,
     PermissionAlreadyExistsException,
     PermissionNotFoundException,
-    RepositoryException,
 )
+from app.modules.auth.infrastructure.exceptions.repository_exception import RepositoryException
 
 logger = logging.getLogger(__name__)
 

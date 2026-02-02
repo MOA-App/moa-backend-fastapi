@@ -6,9 +6,9 @@ from app.modules.auth.application.dtos.permission.permission_outputs import Perm
 from app.modules.auth.application.dtos.permission.permission_queries import ListPermissionsQueryDTO
 from app.modules.auth.application.mappers.permission_mapper import PermissionMapper
 from app.modules.auth.domain.entities.permission_entity import Permission
+from app.modules.auth.infrastructure.exceptions.repository_exception import RepositoryException
 
 from ....domain.repositories.permission_repository import PermissionRepository
-from ....domain.exceptions.auth_exceptions import RepositoryException
 
 
 
