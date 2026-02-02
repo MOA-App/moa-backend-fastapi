@@ -4,6 +4,7 @@ from uuid import UUID
 
 from app.modules.auth.application.dtos.permission.permission_bulk import BulkCreatePermissionsDTO
 from app.modules.auth.application.dtos.permission.permission_inputs import CreatePermissionDTO, UpdatePermissionDTO
+from app.modules.auth.application.dtos.permission.permission_queries import ListPermissionsQueryDTO
 from app.modules.auth.application.usecases.permission.bulk_create_permissions_usecase import BulkCreatePermissionsUseCase
 from app.modules.auth.application.usecases.permission.create_permission_usecase import CreatePermissionUseCase
 from app.modules.auth.application.usecases.permission.delete_permission_usecase import DeletePermissionUseCase
@@ -90,9 +91,15 @@ async def create_permission(
 async def list_permissions(
     query: ListPermissionsQuery = Depends(),
     usecase: ListPermissionsUseCase = Depends(get_list_permissions_usecase),
-    _: None = Depends(require_permission("permissions.read"))
-) -> PermissionListResponse:
-    result = await usecase.execute(query)
+):
+    dto = ListPermissionsQueryDTO(
+        resource=query.resource,
+        search=query.search,
+        page=query.page,
+        page_size=query.limit,
+    )
+
+    result = await usecase.execute(dto)
 
     return PermissionListResponse(
         data=result.items,
