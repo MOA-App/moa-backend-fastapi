@@ -4,6 +4,7 @@ from uuid import UUID
 
 from app.modules.auth.application.dtos.permission.permission_bulk import BulkCreatePermissionsDTO
 from app.modules.auth.application.dtos.permission.permission_inputs import CreatePermissionDTO, UpdatePermissionDTO
+from app.modules.auth.application.dtos.permission.permission_outputs import ResourceActionsDTO
 from app.modules.auth.application.dtos.permission.permission_queries import ListPermissionsQueryDTO
 from app.modules.auth.application.usecases.permission.bulk_create_permissions_usecase import BulkCreatePermissionsUseCase
 from app.modules.auth.application.usecases.permission.create_permission_usecase import CreatePermissionUseCase
@@ -110,6 +111,82 @@ async def list_permissions(
             total_pages=result.total_pages
         )
     )
+
+@router.get(
+    "/grouped-by-resource",
+    response_model=List[ResourceActionsDTO],
+    summary="Permissões agrupadas por recurso",
+    description="Retorna permissões agrupadas por recurso. Requer: permissions.read"
+)
+async def get_permissions_grouped_by_resource(
+    usecase: ListPermissionsUseCase = Depends(get_list_permissions_usecase),
+    _: None = Depends(require_permission("permissions.read"))
+) -> List[ResourceActionsDTO]:
+    """
+    Retorna permissões agrupadas por recurso.
+    
+    **Resposta**:
+    ```json
+    [
+        {
+            "resource": "users",
+            "permissions": [...],
+            "total": 5
+        },
+        {
+            "resource": "posts",
+            "permissions": [...],
+            "total": 4
+        }
+    ]
+    ```
+    """
+    groups = await usecase.group_by_resource()
+    return groups
+
+
+# ============================================================================
+# STATISTICS & REPORTS
+# ============================================================================
+
+@router.get(
+    "/stats",
+    response_model=PermissionStats,
+    summary="Estatísticas de permissões",
+    description="Retorna estatísticas sobre permissões. Requer: permissions.read",
+)
+async def get_permission_stats(
+    list_usecase: ListPermissionsUseCase = Depends(get_list_permissions_usecase),
+    resources_usecase: ListResourcesUseCase = Depends(get_list_resources_usecase),
+    _: None = Depends(require_permission("permissions.read"))
+) -> PermissionStats:
+    """
+    Retorna estatísticas gerais sobre permissões.
+    
+    **Retorna**:
+    - Total de permissões
+    - Total de recursos
+    - Lista de recursos
+    - Top 10 permissões mais usadas
+    """
+    # Obter todas as permissões
+    all_permissions = await list_usecase.execute()
+    
+    # Obter recursos únicos
+    resources = await resources_usecase.execute()
+    
+    # TODO: Implementar "most_used_permissions" quando tiver o método no repository
+    most_used = []
+    
+    stats = PermissionStats(
+        total_permissions=len(all_permissions),
+        total_resources=len(resources),
+        resources=resources,
+        most_used_permissions=most_used
+    )
+    return stats
+
+
 
 @router.get(
     "/{permission_id}",
@@ -298,77 +375,3 @@ async def get_resource_actions(
     """
     result = await usecase.get_resource_actions(resource)
     return result
-
-@router.get(
-    "/grouped-by-resource",
-    response_model=List[PermissionByResourceResponse],
-    summary="Permissões agrupadas por recurso",
-    description="Retorna permissões agrupadas por recurso. Requer: permissions.read"
-)
-async def get_permissions_grouped_by_resource(
-    usecase: ListPermissionsUseCase = Depends(get_list_permissions_usecase),
-    _: None = Depends(require_permission("permissions.read"))
-) -> List[PermissionByResourceResponse]:
-    """
-    Retorna permissões agrupadas por recurso.
-    
-    **Resposta**:
-    ```json
-    [
-        {
-            "resource": "users",
-            "permissions": [...],
-            "total": 5
-        },
-        {
-            "resource": "posts",
-            "permissions": [...],
-            "total": 4
-        }
-    ]
-    ```
-    """
-    groups = await usecase.group_by_resource()
-    return groups
-
-
-# ============================================================================
-# STATISTICS & REPORTS
-# ============================================================================
-
-@router.get(
-    "/stats",
-    response_model=PermissionStats,
-    summary="Estatísticas de permissões",
-    description="Retorna estatísticas sobre permissões. Requer: permissions.read",
-)
-async def get_permission_stats(
-    list_usecase: ListPermissionsUseCase = Depends(get_list_permissions_usecase),
-    resources_usecase: ListResourcesUseCase = Depends(get_list_resources_usecase),
-    _: None = Depends(require_permission("permissions.read"))
-) -> PermissionStats:
-    """
-    Retorna estatísticas gerais sobre permissões.
-    
-    **Retorna**:
-    - Total de permissões
-    - Total de recursos
-    - Lista de recursos
-    - Top 10 permissões mais usadas
-    """
-    # Obter todas as permissões
-    all_permissions = await list_usecase.execute()
-    
-    # Obter recursos únicos
-    resources = await resources_usecase.execute()
-    
-    # TODO: Implementar "most_used_permissions" quando tiver o método no repository
-    most_used = []
-    
-    stats = PermissionStats(
-        total_permissions=len(all_permissions),
-        total_resources=len(resources),
-        resources=resources,
-        most_used_permissions=most_used
-    )
-    return stats

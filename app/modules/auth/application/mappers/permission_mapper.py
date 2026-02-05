@@ -3,7 +3,8 @@ from app.modules.auth.application.dtos.permission.permission_outputs import (
     PermissionDetailDTO,
     PermissionResponseDTO,
     PermissionSummaryDTO,
-    PermissionsByResourceDTO
+    PermissionsByResourceDTO,
+    ResourceActionsDTO
 )
 
 
@@ -50,13 +51,13 @@ class PermissionMapper:
         permissions: list[Permission]
     ) -> list[PermissionsByResourceDTO]:
 
-        grouped = {}
+        grouped: dict[str, list[PermissionResponseDTO]] = {}
 
         for permission in permissions:
             resource = permission.nome.resource.value
 
             grouped.setdefault(resource, []).append(
-                PermissionMapper.to_summary_dto(permission)
+                PermissionMapper.to_response_dto(permission)
             )
 
         return [
@@ -66,4 +67,25 @@ class PermissionMapper:
                 total=len(perms)
             )
             for resource, perms in grouped.items()
+        ]
+    
+    @staticmethod
+    def group_actions_by_resource(
+        permissions: list[Permission]
+    ) -> list[ResourceActionsDTO]:
+
+        grouped: dict[str, set[str]] = {}
+
+        for permission in permissions:
+            resource = permission.nome.resource.value
+            action = permission.nome.action
+
+            grouped.setdefault(resource, set()).add(action)
+
+        return [
+            ResourceActionsDTO(
+                resource=resource,
+                actions=sorted(actions)
+            )
+            for resource, actions in grouped.items()
         ]

@@ -2,7 +2,7 @@ import math
 from typing import List, Optional
 
 from app.modules.auth.application.dtos.permission.paginated_result import PaginatedResult
-from app.modules.auth.application.dtos.permission.permission_outputs import PermissionResponseDTO, PermissionSummaryDTO, PermissionsByResourceDTO
+from app.modules.auth.application.dtos.permission.permission_outputs import PermissionResponseDTO, PermissionSummaryDTO, PermissionsByResourceDTO, ResourceActionsDTO
 from app.modules.auth.application.dtos.permission.permission_queries import ListPermissionsQueryDTO
 from app.modules.auth.application.mappers.permission_mapper import PermissionMapper
 from app.modules.auth.domain.entities.permission_entity import Permission
@@ -77,47 +77,17 @@ class ListPermissionsUseCase:
                 details=str(e)
             )
     
-    async def group_by_resource(self) -> List[PermissionsByResourceDTO]:
-        """Agrupa permissões por recurso"""
+    async def group_by_resource(self) -> List[ResourceActionsDTO]:
         try:
-            # Obter todas as permissões
-            all_permissions = await self.permission_repository.list_all()
-            
-            # Agrupar por recurso
-            resources_dict = {}
-            for permission in all_permissions:
-                resource = permission.get_resource()
-                
-                if resource not in resources_dict:
-                    resources_dict[resource] = []
-                
-                resources_dict[resource].append(permission)
-            
-            # Converter para DTOs
-            result = []
-            for resource, permissions in sorted(resources_dict.items()):
-                result.append(
-                    PermissionsByResourceDTO(
-                        resource=resource,
-                        permissions=[
-                            PermissionSummaryDTO(
-                                id=p.id.value,
-                                nome=p.nome.value,
-                                descricao=p.descricao
-                            )
-                            for p in permissions
-                        ],
-                        total=len(permissions)
-                    )
-                )
-            
-            return result
-            
+            permissions = await self.permission_repository.list_all()
+            return PermissionMapper.group_actions_by_resource(permissions)
+
         except Exception as e:
             raise RepositoryException(
-                operation="agrupar permissões por recurso",
+                operation="agrupar ações por recurso",
                 details=str(e)
             )
+
     
     def _to_response_dto(self, permission: Permission) -> PermissionResponseDTO:
         """Converte Entity para DTO"""
@@ -126,6 +96,6 @@ class ListPermissionsUseCase:
             nome=permission.nome.value,
             descricao=permission.descricao,
             data_criacao=permission.data_criacao,
-            resource=permission.get_resource(),
-            action=permission.get_action()
+            resource=permission.resource(),
+            action=permission.action()
         )
