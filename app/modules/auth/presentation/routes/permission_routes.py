@@ -179,7 +179,7 @@ async def get_permission_stats(
     most_used = []
     
     stats = PermissionStats(
-        total_permissions=len(all_permissions),
+        total_permissions=all_permissions.total,
         total_resources=len(resources),
         resources=resources,
         most_used_permissions=most_used
