@@ -61,6 +61,9 @@ class RoleNotAssignedException(RoleException):
     """Role não está atribuída ao usuário"""
     pass
 
+class RoleNotFoundException(RoleException):
+    """Role não encontrada"""
+    pass
 
 # ============================================================================
 # VALUE OBJECT EXCEPTIONS
