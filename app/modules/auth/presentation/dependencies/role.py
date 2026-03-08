@@ -2,11 +2,11 @@ from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.modules.auth.application.usecases.role.addpermission_role_usecase import AddPermissionToRoleUseCase
-from app.modules.auth.application.usecases.role.byid_role_usecase import GetRoleByIdUseCase
+from app.modules.auth.application.usecases.role.get_role_by_id_usecase import GetRoleByIdUseCase
 from app.modules.auth.application.usecases.role.create_role_usecase import CreateRoleUseCase
 from app.modules.auth.application.usecases.role.delete_role_usecase import DeleteRoleUseCase
-from app.modules.auth.application.usecases.role.list_role_usecase import ListRolesUseCase
-from app.modules.auth.application.usecases.role.removepermission_role_usecase import RemovePermissionFromRoleUseCase
+from app.modules.auth.application.usecases.role.list_roles_usecase import ListRolesUseCase
+from app.modules.auth.application.usecases.role.remove_permission_from_role_usecase import RemovePermissionFromRoleUseCase
 from app.modules.auth.application.usecases.role.update_role_usecase import UpdateRoleUseCase
 from app.shared.infrastructure.database.session import get_db
 
