@@ -1,7 +1,7 @@
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.modules.auth.application.usecases.role.addpermission_role_usecase import AddPermissionToRoleUseCase
+from app.modules.auth.application.usecases.role.add_permission_to_role_usecase import AddPermissionToRoleUseCase
 from app.modules.auth.application.usecases.role.get_role_by_id_usecase import GetRoleByIdUseCase
 from app.modules.auth.application.usecases.role.create_role_usecase import CreateRoleUseCase
 from app.modules.auth.application.usecases.role.delete_role_usecase import DeleteRoleUseCase
