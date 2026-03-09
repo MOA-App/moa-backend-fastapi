@@ -23,11 +23,11 @@ class UpdateRoleRequest(BaseModel):
             )
         return normalized
 
-    model_config = {"str_strip_whitespace": True}
-
-    class Config:
-        json_schema_extra = {
+    model_config = {
+        "str_strip_whitespace": True,
+        "json_schema_extra": {
             "example": {
-                "nome": "super_admin",
+                "nome": "admin"
             }
         }
+    }
