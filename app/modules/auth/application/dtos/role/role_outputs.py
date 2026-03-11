@@ -17,7 +17,6 @@ class RoleResponseDTO:
     """DTO de saída com os dados completos de uma role."""
     id: UUID
     name: str
-    description: Optional[str]
     permissions: List[PermissionSummaryDTO] = field(default_factory=list)
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None

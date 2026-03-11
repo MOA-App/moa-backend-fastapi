@@ -6,7 +6,6 @@ from uuid import UUID
 class CreateRoleDTO:
     """DTO de entrada para criação de uma role."""
     name: str
-    description: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -14,7 +13,6 @@ class UpdateRoleDTO:
     """DTO de entrada para atualização de uma role."""
     role_id: UUID
     name: Optional[str] = None
-    description: Optional[str] = None
 
 
 @dataclass(frozen=True)

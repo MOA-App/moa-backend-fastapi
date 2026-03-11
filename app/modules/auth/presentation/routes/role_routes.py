@@ -47,9 +47,11 @@ async def create_role(
     usecase: CreateRoleUseCase = Depends(get_create_role_usecase),
 ):
     dto = CreateRoleDTO(name=body.nome)
+
     result = await usecase.execute(dto)
+
     return ResponseUtil.created(
-        data=RoleResponse(**result.__dict__).model_dump(),
+        data=result,
         message="Role criada com sucesso",
     )
 
@@ -64,11 +66,7 @@ async def list_roles(
     usecase: ListRolesUseCase = Depends(get_list_roles_usecase),
 ):
     result = await usecase.execute()
-    response = RoleListResponse(
-        roles=[RoleResponse(**r.__dict__) for r in result.roles],
-        total=result.total,
-    )
-    return ResponseUtil.success(data=response.model_dump())
+    return ResponseUtil.success(data=result)
 
 
 @router.get(
@@ -82,7 +80,7 @@ async def get_role(
     usecase: GetRoleByIdUseCase = Depends(get_role_by_id_usecase),
 ):
     result = await usecase.execute(role_id)
-    return ResponseUtil.success(data=RoleResponse(**result.__dict__).model_dump())
+    return ResponseUtil.success(data=result)
 
 
 @router.put(
@@ -96,10 +94,10 @@ async def update_role(
     body: UpdateRoleRequest,
     usecase: UpdateRoleUseCase = Depends(get_update_role_usecase),
 ):
-    dto = UpdateRoleDTO(role_id=role_id, nome=body.nome)
+    dto = UpdateRoleDTO(role_id=role_id, name=body.nome)
     result = await usecase.execute(dto)
     return ResponseUtil.success(
-        data=RoleResponse(**result.__dict__).model_dump(),
+        data=result,
         message="Role atualizada com sucesso",
     )
 

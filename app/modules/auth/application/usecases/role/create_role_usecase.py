@@ -32,7 +32,8 @@ class CreateRoleUseCase:
         if already_exists:
             raise RoleAlreadyExistsException(f"Role '{dto.name}' já existe.")
 
-        role = Role.create(name=name, description=dto.description)
+        role = Role.create(nome=name)
+
         created = await self._role_repository.create(role)
 
         return to_role_response_dto(created)

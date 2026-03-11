@@ -40,8 +40,5 @@ class UpdateRoleUseCase:
                 raise RoleAlreadyExistsException(f"Role '{dto.name}' já existe.")
             role.update_name(new_name)
 
-        if dto.description is not None:
-            role.update_description(dto.description)
-
         updated = await self._role_repository.update(role)
         return to_role_response_dto(updated)
