@@ -3,8 +3,6 @@ from logging.config import fileConfig
 from app.shared.infrastructure.database.base import Base
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
-from app.modules.auth.infrastructure.models.role_model import RoleModel
-from app.modules.auth.infrastructure.models.permission_model import PermissionModel
 
 from alembic import context
 

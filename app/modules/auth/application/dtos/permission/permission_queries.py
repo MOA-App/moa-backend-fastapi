@@ -1,7 +1,6 @@
 from pydantic import BaseModel, Field
-from typing import Optional, List
+from typing import Optional
 
-from app.modules.auth.application.dtos.permission.permission_outputs import PermissionResponseDTO
 
 class ListPermissionsQueryDTO(BaseModel):
     """DTO para query de listagem de permissões"""

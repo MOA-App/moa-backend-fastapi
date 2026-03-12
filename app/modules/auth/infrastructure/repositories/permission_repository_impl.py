@@ -1,8 +1,6 @@
-from ast import stmt
 from typing import Optional, List
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, exists, func, distinct
-from sqlalchemy.orm import selectinload
+from sqlalchemy import select, exists, func
 
 from app.modules.auth.infrastructure.exceptions.repository_exception import RepositoryException
 from app.modules.auth.infrastructure.models.permission_model import PermissionModel

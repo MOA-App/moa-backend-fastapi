@@ -27,7 +27,7 @@ class GetPermissionUseCase:
         """
         try:
             entity_id = EntityId.from_string(permission_id)
-        except ValueError as e:
+        except ValueError:
             raise PermissionNotFoundException(permission_id)
         
         try:

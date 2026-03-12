@@ -14,8 +14,6 @@ from app.modules.auth.application.usecases.role.remove_permission_from_role_usec
 from app.modules.auth.presentation.dependencies.permissions import require_permission
 from app.modules.auth.presentation.schemas.role.add_permission_role_request import AddPermissionToRoleRequest
 from app.modules.auth.presentation.schemas.role.create_role_request import CreateRoleRequest
-from app.modules.auth.presentation.schemas.role.role_list_response import RoleListResponse
-from app.modules.auth.presentation.schemas.role.role_response import RoleResponse
 from app.modules.auth.presentation.schemas.role.update_role_request import UpdateRoleRequest
 from app.modules.auth.presentation.utils.response_util import ResponseUtil
 

@@ -1,4 +1,4 @@
-from app.modules.auth.application.dtos.role.role_outputs import PermissionSummaryDTO, RoleResponseDTO
+from app.modules.auth.application.dtos.role.role_outputs import RoleResponseDTO
 from app.modules.auth.application.mappers.permission_mapper import PermissionMapper
 from app.modules.auth.domain.entities.role_entity import Role
 

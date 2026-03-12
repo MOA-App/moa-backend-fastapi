@@ -12,7 +12,6 @@ from app.modules.auth.setup import setup_auth_module
 from app.modules.products.presentation.routes.category_routes import router as category_router
 
 # Importar modelos para que o Base.metadata conheça as tabelas
-from app.modules.products.infrastructure.models.category_model import CategoryModel
 
 
 # -----------------------------------------------------------------------------
