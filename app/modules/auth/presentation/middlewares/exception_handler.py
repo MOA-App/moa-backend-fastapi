@@ -12,6 +12,12 @@ from app.modules.auth.domain.exceptions.auth_exceptions import (
     PermissionAlreadyExistsException,
     PermissionNotFoundException,
 )
+from app.modules.auth.domain.exceptions.auth_exceptions import (
+    RoleNotFoundException,
+    RoleAlreadyExistsException,
+    RoleAlreadyAssignedException,
+    RoleNotAssignedException,
+)
 from app.modules.auth.infrastructure.exceptions.repository_exception import RepositoryException
 
 logger = logging.getLogger(__name__)
@@ -23,16 +29,14 @@ def _base_error_response(
     message: str,
     errors: list | None = None,
 ) -> JSONResponse:
-    """Formato padrão de erro da API"""
+    """Formato padrão de erro da API."""
     return JSONResponse(
         status_code=status_code,
         content={
             "success": False,
             "message": message,
             "errors": errors or [],
-            "timestamp": datetime.datetime.now(
-                datetime.timezone.utc
-            ).isoformat(),
+            "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         },
     )
 
@@ -75,21 +79,25 @@ async def domain_exception_handler(
     """
 
     # -------- NOT FOUND (404)
-    if isinstance(exc, PermissionNotFoundException):
+    if isinstance(exc, (PermissionNotFoundException, RoleNotFoundException)):
         return _base_error_response(
             status_code=status.HTTP_404_NOT_FOUND,
             message=str(exc),
         )
 
     # -------- CONFLICT (409)
-    if isinstance(exc, PermissionAlreadyExistsException):
+    if isinstance(exc, (
+        PermissionAlreadyExistsException,
+        RoleAlreadyExistsException,
+        RoleAlreadyAssignedException,
+    )):
         return _base_error_response(
             status_code=status.HTTP_409_CONFLICT,
             message=str(exc),
         )
 
     # -------- BAD REQUEST (400)
-    if isinstance(exc, DomainValidationException):
+    if isinstance(exc, (DomainValidationException, RoleNotAssignedException)):
         return _base_error_response(
             status_code=status.HTTP_400_BAD_REQUEST,
             message=str(exc),
@@ -97,20 +105,14 @@ async def domain_exception_handler(
 
     # -------- INTERNAL ERROR (500 - repository)
     if isinstance(exc, RepositoryException):
-        logger.error(
-            f"Repository error: {exc}",
-            exc_info=True,
-        )
+        logger.error("Repository error: %s", exc, exc_info=True)
         return _base_error_response(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             message="Erro ao acessar dados. Tente novamente mais tarde.",
         )
 
     # -------- FALLBACK (500)
-    logger.error(
-        f"Unhandled exception: {exc}",
-        exc_info=True,
-    )
+    logger.error("Unhandled exception: %s", exc, exc_info=True)
     return _base_error_response(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         message="Erro interno do servidor",

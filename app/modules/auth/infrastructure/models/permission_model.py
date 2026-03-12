@@ -66,16 +66,15 @@ class PermissionModel(Base, TimestampMixin):
     # ========================================================================
     # RELATIONSHIPS
     # ========================================================================
-    '''
+
     # Many-to-Many com Role através de role_permissions
     roles = relationship(
         "RoleModel",
         secondary="role_permissions",
         back_populates="permissions",
         lazy="selectin",  # Evita N+1 queries
-        cascade="save-update"
     )
-    '''
+
     # ========================================================================
     # METHODS
     # ========================================================================

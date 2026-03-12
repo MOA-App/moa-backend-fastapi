@@ -2,7 +2,7 @@ import math
 from typing import List, Optional
 
 from app.modules.auth.application.dtos.permission.paginated_result import PaginatedResult
-from app.modules.auth.application.dtos.permission.permission_outputs import PermissionResponseDTO, PermissionSummaryDTO, PermissionsByResourceDTO, ResourceActionsDTO
+from app.modules.auth.application.dtos.permission.permission_outputs import PermissionResponseDTO, PermissionSummaryDTO, ResourceActionsDTO
 from app.modules.auth.application.dtos.permission.permission_queries import ListPermissionsQueryDTO
 from app.modules.auth.application.mappers.permission_mapper import PermissionMapper
 from app.modules.auth.domain.entities.permission_entity import Permission

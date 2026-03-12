@@ -19,7 +19,6 @@ from app.modules.auth.presentation.schemas.permission.bulk_create_response_schem
 from app.modules.auth.presentation.schemas.permission.create_permission_schema import CreatePermissionRequest
 from app.modules.auth.presentation.schemas.permission.list_permissions_schema import ListPermissionsQuery
 from app.modules.auth.presentation.schemas.permission.message_response_schema import MessageResponse
-from app.modules.auth.presentation.schemas.permission.permission_by_resource_response import PermissionByResourceResponse
 from app.modules.auth.presentation.schemas.permission.permission_list_response import PermissionListMeta, PermissionListResponse
 from app.modules.auth.presentation.schemas.permission.permission_response import PermissionResponse
 from app.modules.auth.presentation.schemas.permission.permission_stats_schema import PermissionStats

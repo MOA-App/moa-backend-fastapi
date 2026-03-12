@@ -76,7 +76,6 @@ class PermissionName:
             users.create -> users
             admin.users.delete -> admin.users
         """
-        parts = self.value.split(".")
         return PermissionResource(self.get_base_resource())
 
     @property

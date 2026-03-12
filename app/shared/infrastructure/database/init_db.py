@@ -4,8 +4,6 @@ from sqlalchemy import text
 
 from app.shared.infrastructure.database.base import Base
 from app.shared.infrastructure.database.session import DatabaseSession
-from app.modules.auth.infrastructure.models.permission_model import PermissionModel
-from app.modules.products.infrastructure.models.category_model import CategoryModel
 
 # ------------------------------------------------------------------
 # LOGGING (ESSENCIAL)
