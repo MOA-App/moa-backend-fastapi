@@ -10,6 +10,7 @@ from app.shared.presentation.middlewares.request_id_middleware import RequestIdM
 from app.shared.presentation.middlewares.security_headers_middleware import SecurityHeadersMiddleware
 from app.modules.auth.setup import setup_auth_module
 from app.modules.products.presentation.routes.category_routes import router as category_router
+from app.shared.presentation.exceptions.http_exceptions import register_exception_handlers
 
 # Importar modelos para que o Base.metadata conheça as tabelas
 
@@ -56,7 +57,7 @@ app = FastAPI(
     redoc_url="/redoc" if settings.DEBUG else None,
     openapi_url="/openapi.json" if settings.DEBUG else None,
 )
-
+register_exception_handlers(app)
 
 # -----------------------------------------------------------------------------
 # GLOBAL MIDDLEWARES
