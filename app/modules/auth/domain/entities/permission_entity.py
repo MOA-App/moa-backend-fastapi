@@ -127,7 +127,7 @@ class Permission:
         Returns:
             bool: True se corresponde à ação.
         """
-        return self.nome.action() == action.lower()
+        return self.nome.action == action.lower()
     
     def matches(self, pattern: str) -> bool:
         """
@@ -155,11 +155,11 @@ class Permission:
         
         resource_match = (
             resource_pattern == "*" or 
-            self.nome.resource() == resource_pattern
+            self.nome.resource.value == resource_pattern
         )
         action_match = (
             action_pattern == "*" or 
-            self.nome.action() == action_pattern
+            self.nome.action == action_pattern
         )
         
         return resource_match and action_match
@@ -180,7 +180,7 @@ class Permission:
         Returns:
             str: Nome do recurso.
         """
-        return self.nome.resource()
+        return self.nome.resource.value
     
     def action(self) -> str:
         """
@@ -189,7 +189,7 @@ class Permission:
         Returns:
             str: Nome da ação.
         """
-        return self.nome.action()
+        return self.nome.action
 
     # ---------- Identity ----------
 
