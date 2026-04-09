@@ -1,5 +1,5 @@
 from typing import List
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from .create_permission_schema import CreatePermissionRequest
 
@@ -15,7 +15,7 @@ class BulkCreatePermissionsRequest(BaseModel):
         description="Lista de permissões a serem criadas"
     )
 
-    class Config:
+    model_config = ConfigDict(
         json_schema_extra = {
             "example": {
                 "permissions": [
@@ -34,3 +34,4 @@ class BulkCreatePermissionsRequest(BaseModel):
                 ]
             }
         }
+    )

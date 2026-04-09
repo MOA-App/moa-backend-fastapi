@@ -1,5 +1,5 @@
 from typing import List
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from .permission_response import PermissionResponse
 
 
@@ -13,7 +13,7 @@ class PermissionByResourceResponse(BaseModel):
     )
     total: int = Field(..., description="Quantidade de permissões")
 
-    class Config:
+    model_config = ConfigDict(
         json_schema_extra = {
             "example": {
                 "resource": "users",
@@ -30,3 +30,4 @@ class PermissionByResourceResponse(BaseModel):
                 "total": 4
             }
         }
+    )

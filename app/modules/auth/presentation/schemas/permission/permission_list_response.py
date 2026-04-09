@@ -1,5 +1,5 @@
 from typing import List
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 from app.modules.auth.application.dtos.permission.permission_outputs import PermissionSummaryDTO
 
@@ -19,7 +19,7 @@ class PermissionListResponse(BaseModel):
     data: List[PermissionSummaryDTO] = Field(..., description="Lista de permissões")
     meta: PermissionListMeta = Field(..., description="Metadados de paginação")
 
-    class Config:
+    model_config = ConfigDict(
         json_schema_extra = {
             "example": {
                 "data": [
@@ -40,3 +40,4 @@ class PermissionListResponse(BaseModel):
                 }
             }
         }
+    )

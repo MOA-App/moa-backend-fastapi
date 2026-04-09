@@ -1,5 +1,5 @@
 from typing import List
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from .role_response import RoleResponse
 
 
@@ -9,7 +9,7 @@ class RoleListResponse(BaseModel):
     roles: List[RoleResponse] = Field(..., description="Lista de roles")
     total: int = Field(..., description="Quantidade total de roles")
 
-    class Config:
+    model_config = ConfigDict(
         json_schema_extra = {
             "example": {
                 "roles": [
@@ -35,3 +35,4 @@ class RoleListResponse(BaseModel):
                 "total": 2,
             }
         }
+    )
