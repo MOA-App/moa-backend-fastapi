@@ -8,6 +8,7 @@ from app.modules.auth.application.usecases.permission.bulk_create_permissions_us
 from app.modules.auth.application.usecases.permission.create_permission_usecase import CreatePermissionUseCase
 from app.modules.auth.application.usecases.permission.delete_permission_usecase import DeletePermissionUseCase
 from app.modules.auth.application.usecases.permission.get_permission_usecase import GetPermissionUseCase
+from app.modules.auth.application.usecases.permission.get_permission_by_name_usecase import GetPermissionByNameUseCase
 from app.modules.auth.application.usecases.permission.list_permissions_usecase import ListPermissionsUseCase
 from app.modules.auth.application.usecases.permission.list_resources_usecase import ListResourcesUseCase
 from app.modules.auth.application.usecases.permission.update_permission_usecase import UpdatePermissionUseCase
@@ -32,6 +33,7 @@ from ..dependencies.auth_deps import (
     get_list_permissions_usecase,
     get_list_resources_usecase,
     get_permission_usecase,
+    get_permission_by_name_usecase,
     get_update_permission_usecase,
 )
 
@@ -103,6 +105,27 @@ async def list_permissions(
             total_pages=result.total_pages
         )
     )
+
+@router.get(
+    "/search/by-name",
+    response_model=PermissionResponse,
+    summary="Buscar permissão por nome",
+    description="Busca uma permissão pelo nome. Requer: permissions.read",
+)
+async def get_permission_by_name(
+    name: str,
+    usecase: GetPermissionByNameUseCase = Depends(get_permission_by_name_usecase),
+    _: None = Depends(require_permission("permissions.read"))
+) -> PermissionResponse:
+    """
+    Busca uma permissão pelo nome.
+
+    **Query Parameter**:
+    - `name`: Nome da permissão (ex: users.create)
+    """
+    permission = await usecase.execute(name)
+    return permission
+
 
 @router.get(
     "/{permission_id}",
