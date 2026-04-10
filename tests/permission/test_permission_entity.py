@@ -6,15 +6,18 @@ from app.modules.auth.domain.value_objects.permission_resource_vo import Permiss
 from app.shared.domain.value_objects.id_vo import EntityId
 
 
-def make_permission(
-    nome: str = "users.create",
-    descricao: str = None,
-) -> Permission:
+def make_permission(nome="users.create", descricao=None, with_id=None):
+    if with_id:
+        return Permission.reconstruct(
+            id=with_id,
+            nome=PermissionName(nome),
+            descricao=descricao,
+            data_criacao=datetime.now(timezone.utc),
+        )
     return Permission.create(
         nome=PermissionName(nome),
         descricao=descricao,
     )
-
 
 class TestPermissionCreate:
 
