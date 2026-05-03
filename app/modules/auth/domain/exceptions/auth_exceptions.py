@@ -61,33 +61,9 @@ class RoleNotAssignedException(RoleException):
     """Role não está atribuída ao usuário"""
     pass
 
-
-# ============================================================================
-# REPOSITORY EXCEPTIONS
-# ============================================================================
-
-class RepositoryException(AuthException):
-    """Exceção base para erros de repositório"""
-    
-    def __init__(self, operation: str = "", details: str = ""):
-        """
-        Args:
-            operation: Nome da operação que falhou (ex: 'criar permissão')
-            details: Detalhes do erro (mensagem original)
-        """
-        super().__init__(f"Erro ao {operation}: {details}")
-        self.operation = operation
-        self.details = details
-
-class DatabaseConnectionException(RepositoryException):
-    """Erro de conexão com banco de dados"""
+class RoleNotFoundException(RoleException):
+    """Role não encontrada"""
     pass
-
-
-class DatabaseOperationException(RepositoryException):
-    """Erro ao executar operação no banco"""
-    pass
-
 
 # ============================================================================
 # VALUE OBJECT EXCEPTIONS

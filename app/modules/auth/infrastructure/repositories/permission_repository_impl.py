@@ -1,18 +1,15 @@
-from ast import stmt
 from typing import Optional, List
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, exists, func, distinct
-from sqlalchemy.orm import selectinload
+from sqlalchemy import select, exists, func
 
+from app.modules.auth.infrastructure.exceptions.repository_exception import RepositoryException
 from app.modules.auth.infrastructure.models.permission_model import PermissionModel
 
 from ...domain.repositories.permission_repository import PermissionRepository
 from ...domain.entities.permission_entity import Permission
 from ...domain.value_objects.permission_name_vo import PermissionName
-from ...domain.exceptions.auth_exceptions import (
-    PermissionNotFoundException,
-    RepositoryException
-)
+from ...domain.exceptions.auth_exceptions import PermissionNotFoundException
+
 from app.shared.domain.value_objects.id_vo import EntityId
 
 
@@ -397,45 +394,34 @@ class PermissionRepositoryImpl(PermissionRepository):
         """
         Lista todas as ações disponíveis para um recurso.
         
-        Args:
-            resource: Nome do recurso
-            
-        Returns:
-            List[str]: Lista de ações únicas ordenadas
-            
-        Example:
+        Exemplo:
             resource: "users"
-            permissions: users.create, users.read, users.update
-            result: ['create', 'read', 'update']
+            permissions: users.create, users.read
+            result: ["create", "read"]
         """
         try:
             resource_lower = resource.lower()
-            
-            # Buscar permissões do recurso
-            stmt = select(func.split_part(PermissionModel.nome, '.', -1).distinct()).where(
-                PermissionModel.nome.like(f"{resource_lower}.%")
+
+            stmt = (
+                select(func.distinct(func.split_part(PermissionModel.nome, ".", -1)))
+                .where(PermissionModel.nome.like(f"{resource_lower}.%"))
             )
-            
+
             result = await self.session.execute(stmt)
-            names = result.scalars().all()
-            
-            # Extrair ações (última parte após o ponto)
-            actions = set()
-            for name in names:
-                parts = name.split(".")
-                if len(parts) >= 2:
-                    # users.create -> create
-                    # admin.users.create -> create
-                    actions.add(parts[-1])
-            
-            result_list = sorted(list(actions))
-            logger.debug(f"Found {len(result_list)} actions for resource: {resource}")
-            
-            return result_list
-            
+            actions = sorted(result.scalars().all())
+
+            logger.debug(
+                "Found %d actions for resource '%s': %s",
+                len(actions),
+                resource,
+                actions,
+            )
+
+            return actions
+
         except Exception as e:
-            logger.error(f"Error listing actions: {e}")
+            logger.error("Error listing actions for resource %s: %s", resource, e)
             raise RepositoryException(
                 operation="listar ações",
-                details=str(e)
+                details=str(e),
             )

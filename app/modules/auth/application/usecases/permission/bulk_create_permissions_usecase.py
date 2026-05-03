@@ -3,7 +3,8 @@ from typing import List
 from app.modules.auth.application.dtos.permission.permission_bulk import BulkCreatePermissionsDTO
 from app.modules.auth.application.dtos.permission.permission_outputs import PermissionResponseDTO
 from app.modules.auth.application.dtos.permission.permission_bulk import BulkCreatePermissionsResponseDTO
-from app.modules.auth.domain.exceptions.auth_exceptions import InvalidPermissionFormatException, RepositoryException
+from app.modules.auth.domain.exceptions.auth_exceptions import InvalidPermissionFormatException
+from app.modules.auth.infrastructure.exceptions.repository_exception import RepositoryException
 
 from ....domain.repositories.permission_repository import PermissionRepository
 from ....domain.entities.permission_entity import Permission
@@ -44,8 +45,8 @@ class BulkCreatePermissionsUseCase:
                         nome=saved.nome.value,
                         descricao=saved.descricao,
                         data_criacao=saved.data_criacao,
-                        resource=str(saved.nome.get_resource()),
-                        action=saved.nome.get_action()
+                        resource=saved.nome.get_base_resource(),
+                        action=saved.nome.action
                     )
                 )
 

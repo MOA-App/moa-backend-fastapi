@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 from typing import Optional
 from uuid import UUID
 import re
@@ -68,14 +68,14 @@ class CreatePermissionDTO(BaseModel):
         
         return cleaned
     
-    class Config:
+    model_config = ConfigDict(
         json_schema_extra = {
             "example": {
                 "nome": "users.create",
                 "descricao": "Permite criar novos usuários no sistema"
             }
         }
-
+    )
 
 class UpdatePermissionDTO(BaseModel):
     """
@@ -98,37 +98,38 @@ class UpdatePermissionDTO(BaseModel):
         cleaned = v.strip()
         return cleaned if cleaned else None
     
-    class Config:
+    model_config = ConfigDict(
         json_schema_extra = {
             "example": {
                 "descricao": "Descrição atualizada da permissão"
             }
         }
-
+    )
 
 class AssignPermissionToRoleDTO(BaseModel):
     """DTO para atribuir permissão a uma role"""
     role_id: UUID = Field(..., description="ID da role")
     permission_id: UUID = Field(..., description="ID da permissão")
     
-    class Config:
+    model_config = ConfigDict(
         json_schema_extra = {
             "example": {
                 "role_id": "123e4567-e89b-12d3-a456-426614174000",
                 "permission_id": "987fcdeb-51a2-43f7-9876-543210fedcba"
             }
         }
-
+    )
 
 class RevokePermissionFromRoleDTO(BaseModel):
     """DTO para remover permissão de uma role"""
     role_id: UUID = Field(..., description="ID da role")
     permission_id: UUID = Field(..., description="ID da permissão")
     
-    class Config:
+    model_config = ConfigDict(
         json_schema_extra = {
             "example": {
                 "role_id": "123e4567-e89b-12d3-a456-426614174000",
                 "permission_id": "987fcdeb-51a2-43f7-9876-543210fedcba"
             }
         }
+    )

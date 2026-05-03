@@ -1,5 +1,5 @@
 from typing import Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class UpdatePermissionRequest(BaseModel):
@@ -11,9 +11,10 @@ class UpdatePermissionRequest(BaseModel):
         description="Nova descrição da permissão"
     )
     
-    class Config:
+    model_config = ConfigDict(
         json_schema_extra = {
             "example": {
                 "descricao": "Nova descrição atualizada para a permissão"
             }
         }
+    )

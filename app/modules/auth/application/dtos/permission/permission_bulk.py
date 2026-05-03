@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from typing import List
 
 from app.modules.auth.application.dtos.permission.permission_inputs import CreatePermissionDTO
@@ -13,7 +13,7 @@ class BulkCreatePermissionsDTO(BaseModel):
         description="Lista de permissões a criar"
     )
     
-    class Config:
+    model_config = ConfigDict(
         json_schema_extra = {
             "example": {
                 "permissions": [
@@ -24,6 +24,7 @@ class BulkCreatePermissionsDTO(BaseModel):
                 ]
             }
         }
+    )
 
 class BulkCreatePermissionsResponseDTO(BaseModel):
     """DTO de resposta para criação em lote"""
@@ -42,7 +43,7 @@ class BulkCreatePermissionsResponseDTO(BaseModel):
     total_skipped: int
     total_errors: int
     
-    class Config:
+    model_config = ConfigDict(
         json_schema_extra = {
             "example": {
                 "created": [
@@ -57,3 +58,4 @@ class BulkCreatePermissionsResponseDTO(BaseModel):
                 "total_errors": 1
             }
         }
+    )

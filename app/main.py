@@ -12,6 +12,8 @@ from app.modules.auth.setup import setup_auth_module
 from app.modules.products.presentation.routes.category_routes import router as category_router
 from app.modules.products.presentation.routes.product_routes import router as product_router
 
+from app.shared.presentation.exceptions.http_exceptions import register_exception_handlers
+
 # Importar modelos para que o Base.metadata conheça as tabelas
 from app.modules.products.infrastructure.models.category_model import CategoryModel
 from app.modules.products.infrastructure.models.product_model import ProductModel
@@ -60,6 +62,9 @@ app = FastAPI(
     openapi_url="/openapi.json" if settings.DEBUG else None,
 )
 
+# 🔥 mantém isso (veio da main)
+register_exception_handlers(app)
+
 
 # -----------------------------------------------------------------------------
 # GLOBAL MIDDLEWARES
@@ -77,9 +82,6 @@ app.add_middleware(SecurityHeadersMiddleware)
 setup_auth_module(app)
 app.include_router(category_router, prefix="/api/v1")
 app.include_router(product_router, prefix="/api/v1")
-
-# setup_users_module(app)
-# setup_products_module(app)
 
 
 # -----------------------------------------------------------------------------

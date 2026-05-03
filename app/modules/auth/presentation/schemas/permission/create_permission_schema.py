@@ -1,5 +1,5 @@
 from typing import Optional
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class CreatePermissionRequest(BaseModel):
@@ -23,10 +23,11 @@ class CreatePermissionRequest(BaseModel):
     def normalize_nome(cls, v: str) -> str:
         return v.strip().lower()
 
-    class Config:
+    model_config = ConfigDict(
         json_schema_extra = {
             "example": {
                 "nome": "users.create",
                 "descricao": "Permite criar novos usuários no sistema"
             }
         }
+    )

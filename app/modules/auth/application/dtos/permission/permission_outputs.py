@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from typing import Optional, List
 from uuid import UUID
 from datetime import datetime
@@ -14,8 +14,7 @@ class PermissionResponseDTO(BaseModel):
     resource: str = Field(description="Recurso da permissão (ex: users)")
     action: str = Field(description="Ação da permissão (ex: create)")
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(
         json_schema_extra = {
             "example": {
                 "id": "987fcdeb-51a2-43f7-9876-543210fedcba",
@@ -26,7 +25,7 @@ class PermissionResponseDTO(BaseModel):
                 "action": "create"
             }
         }
-
+    )
 
 class PermissionSummaryDTO(BaseModel):
     """DTO resumido de Permission (para listagens)"""
@@ -34,8 +33,7 @@ class PermissionSummaryDTO(BaseModel):
     nome: str
     descricao: Optional[str] = None
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PermissionDetailDTO(BaseModel):
@@ -57,8 +55,7 @@ class PermissionDetailDTO(BaseModel):
         description="Quantidade de usuários que possuem esta permissão (via roles)"
     )
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PermissionsByResourceDTO(BaseModel):
@@ -67,7 +64,7 @@ class PermissionsByResourceDTO(BaseModel):
     permissions: List[PermissionSummaryDTO]
     total: int = Field(description="Total de permissões deste recurso")
     
-    class Config:
+    model_config = ConfigDict(
         json_schema_extra = {
             "example": {
                 "resource": "users",
@@ -78,7 +75,7 @@ class PermissionsByResourceDTO(BaseModel):
                 "total": 2
             }
         }
-
+    )
 
 class ResourceActionsDTO(BaseModel):
     """DTO para listar ações disponíveis de um recurso"""
@@ -88,14 +85,14 @@ class ResourceActionsDTO(BaseModel):
         examples=[["create", "read", "update", "delete"]]
     )
     
-    class Config:
+    model_config = ConfigDict(
         json_schema_extra = {
             "example": {
                 "resource": "users",
                 "actions": ["create", "read", "update", "delete", "manage"]
             }
         }
-
+    )
 
 class PermissionStatsDTO(BaseModel):
     """DTO para estatísticas de permissões"""
@@ -107,7 +104,7 @@ class PermissionStatsDTO(BaseModel):
         description="Top 10 permissões mais usadas"
     )
     
-    class Config:
+    model_config = ConfigDict(
         json_schema_extra = {
             "example": {
                 "total_permissions": 45,
@@ -116,3 +113,4 @@ class PermissionStatsDTO(BaseModel):
                 "most_used_permissions": []
             }
         }
+    )

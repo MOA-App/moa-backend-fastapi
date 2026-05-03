@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from typing import Iterable, List
 
+from app.modules.auth.domain.value_objects.permission_name_vo import PermissionName
 from app.shared.domain.value_objects.id_vo import EntityId
 from app.modules.auth.domain.entities.permission_entity import Permission
 from ..value_objects.role_name_vo import RoleName
@@ -15,12 +16,11 @@ class Role:
     _permissions: List[Permission] = field(default_factory=list, repr=False)
 
     # ---------- Factories ----------
-
     @classmethod
-    def create(cls, nome: str) -> "Role":
+    def create(cls, nome: RoleName) -> "Role":
         return cls(
             id=EntityId.generate(),
-            nome=RoleName(nome),
+            nome=nome,
             _permissions=[]
         )
 
@@ -39,6 +39,10 @@ class Role:
 
     # ---------- Behavior ----------
 
+    def update_name(self, new_name: RoleName) -> None:
+        """Atualiza o nome da role."""
+        self.nome = new_name
+
     def add_permission(self, permission: Permission) -> None:
         if self.has_permission(permission.nome):
             return
@@ -52,7 +56,7 @@ class Role:
     def clear_permissions(self) -> None:
         self._permissions.clear()
 
-    def has_permission(self, permission_name: Permission) -> bool:
+    def has_permission(self, permission_name: PermissionName) -> bool:
         return any(
             p.nome == permission_name
             for p in self._permissions

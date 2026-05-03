@@ -1,5 +1,5 @@
 from typing import Optional, Literal
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class ListPermissionsQuery(BaseModel):
@@ -40,7 +40,7 @@ class ListPermissionsQuery(BaseModel):
         description="Ordem de ordenação"
     )
 
-    class Config:
+    model_config = ConfigDict(
         json_schema_extra = {
             "example": {
                 "page": 1,
@@ -50,3 +50,4 @@ class ListPermissionsQuery(BaseModel):
                 "sort_order": "asc"
             }
         }
+    )

@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class PermissionCreatedResponse(BaseModel):
@@ -15,5 +15,5 @@ class PermissionCreatedResponse(BaseModel):
         description="Mensagem de confirmação"
     )
 
-    class Config:
-        from_attributes = True
+
+    model_config = ConfigDict(from_attributes=True)
