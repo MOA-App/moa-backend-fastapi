@@ -1,5 +1,4 @@
 import pytest
-from unittest.mock import AsyncMock
 from uuid import uuid4
 
 from app.modules.auth.application.usecases.role.create_role_usecase import CreateRoleUseCase

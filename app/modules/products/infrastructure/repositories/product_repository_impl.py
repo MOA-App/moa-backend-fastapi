@@ -121,7 +121,7 @@ class ProductRepositoryImpl(ProductRepositoryInterface):
         """Lista produtos ativos"""
         result = await self.session.execute(
             select(ProductModel)
-            .where(ProductModel.is_active == True)
+            .where(ProductModel.is_active)
             .order_by(ProductModel.name)
         )
         models = result.scalars().all()
@@ -152,4 +152,3 @@ class ProductRepositoryImpl(ProductRepositoryInterface):
             .where(ProductModel.category_id == category_id)
         )
         return result.scalar()
-

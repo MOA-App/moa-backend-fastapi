@@ -1,12 +1,9 @@
 from app.modules.auth.application.dtos.permission.permission_outputs import PermissionResponseDTO
 from app.modules.auth.application.mappers.permission_mapper import PermissionMapper
-from ....domain.repositories.permission_repository import PermissionRepository
-from ....domain.value_objects.permission_name_vo import PermissionName
-from ....domain.exceptions.auth_exceptions import (
-    PermissionNotFoundException,
-    InvalidPermissionFormatException,
-    RepositoryException
-)
+from app.modules.auth.domain.exceptions.auth_exceptions import InvalidPermissionFormatException, PermissionNotFoundException
+from app.modules.auth.domain.repositories.permission_repository import PermissionRepository
+from app.modules.auth.domain.value_objects.permission_name_vo import PermissionName
+from app.modules.auth.infrastructure.exceptions.repository_exception import RepositoryException
 
 
 class GetPermissionByNameUseCase:
@@ -52,4 +49,3 @@ class GetPermissionByNameUseCase:
                 operation="buscar permissão por nome",
                 details=str(e)
             )
-

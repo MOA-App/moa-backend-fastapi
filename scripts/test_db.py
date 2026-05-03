@@ -15,7 +15,7 @@ async def test_and_create():
     # URL direto para evitar problemas com .env
     database_url = "postgresql+asyncpg://postgres:postgres@localhost:5432/moa_db"
 
-    print(f"Connecting to database...")
+    print("Connecting to database...")
 
     try:
         engine = create_async_engine(database_url, echo=True)

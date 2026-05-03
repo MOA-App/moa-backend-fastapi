@@ -4,14 +4,14 @@ from logging.config import fileConfig
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
+from app.modules.auth.infrastructure.models.permission_model import PermissionModel  # noqa
+from app.modules.products.infrastructure.models.category_model import CategoryModel  # noqa
 
 from alembic import context
 
 from app.shared.infrastructure.database.base import Base
 
 # importa seus models
-from app.modules.auth.infrastructure.models.permission_model import PermissionModel
-from app.modules.products.infrastructure.models.category_model import CategoryModel
 
 
 config = context.config

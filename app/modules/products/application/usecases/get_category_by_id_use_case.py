@@ -1,4 +1,3 @@
-from typing import Optional
 
 from ..dtos.category_dto import CategoryResponseDTO
 from ...domain.repositories.category_repository import CategoryRepositoryInterface

@@ -15,8 +15,6 @@ from app.modules.products.presentation.routes.product_routes import router as pr
 from app.shared.presentation.exceptions.http_exceptions import register_exception_handlers
 
 # Importar modelos para que o Base.metadata conheça as tabelas
-from app.modules.products.infrastructure.models.category_model import CategoryModel
-from app.modules.products.infrastructure.models.product_model import ProductModel
 
 
 # -----------------------------------------------------------------------------
