@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 
@@ -10,6 +10,8 @@ from ...application.dtos.category_dto import (
 from ...application.usecases.create_category_use_case import CreateCategoryUseCase
 from ...application.usecases.delete_category_use_case import DeleteCategoryUseCase
 from ...application.usecases.list_categories_use_case import ListCategoriesUseCase
+from ...application.usecases.get_category_by_id_use_case import GetCategoryByIdUseCase
+from ...application.usecases.get_category_by_name_use_case import GetCategoryByNameUseCase
 from ...infrastructure.repositories.category_repository_impl import CategoryRepositoryImpl
 from ...domain.exceptions.category_exceptions import (
     CategoryAlreadyExistsException,
@@ -61,6 +63,27 @@ async def list_categories(
 
 
 @router.get(
+    "/search/by-name",
+    response_model=CategoryResponseDTO,
+    summary="Buscar categoria por nome",
+    description="Busca uma categoria pelo nome"
+)
+async def get_category_by_name(
+    name: str = Query(..., min_length=1, description="Nome da categoria"),
+    repository: CategoryRepositoryImpl = Depends(get_category_repository)
+):
+    """Endpoint para buscar uma categoria por nome"""
+    try:
+        use_case = GetCategoryByNameUseCase(repository)
+        return await use_case.execute(name)
+    except CategoryNotFoundException as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e)
+        )
+
+
+@router.get(
     "/{category_id}",
     response_model=CategoryResponseDTO,
     summary="Buscar categoria",
@@ -71,13 +94,14 @@ async def get_category(
     repository: CategoryRepositoryImpl = Depends(get_category_repository)
 ):
     """Endpoint para buscar uma categoria por ID"""
-    category = await repository.get_by_id(category_id)
-    if not category:
+    try:
+        use_case = GetCategoryByIdUseCase(repository)
+        return await use_case.execute(category_id)
+    except CategoryNotFoundException as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Categoria com ID '{category_id}' não encontrada"
+            detail=str(e)
         )
-    return CategoryResponseDTO.model_validate(category)
 
 
 @router.delete(

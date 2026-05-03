@@ -5,6 +5,7 @@ from app.modules.auth.application.usecases.permission.bulk_create_permissions_us
 from app.modules.auth.application.usecases.permission.create_permission_usecase import CreatePermissionUseCase
 from app.modules.auth.application.usecases.permission.delete_permission_usecase import DeletePermissionUseCase
 from app.modules.auth.application.usecases.permission.get_permission_usecase import GetPermissionUseCase
+from app.modules.auth.application.usecases.permission.get_permission_by_name_usecase import GetPermissionByNameUseCase
 from app.modules.auth.application.usecases.permission.list_permissions_usecase import ListPermissionsUseCase
 from app.modules.auth.application.usecases.permission.list_resources_usecase import ListResourcesUseCase
 from app.modules.auth.application.usecases.permission.update_permission_usecase import UpdatePermissionUseCase
@@ -47,6 +48,13 @@ def get_permission_usecase(
 ) -> GetPermissionUseCase:
     """Dependency para GetPermissionUseCase"""
     return GetPermissionUseCase(permission_repo)
+
+
+def get_permission_by_name_usecase(
+    permission_repo: PermissionRepositoryImpl = Depends(get_permission_repository)
+) -> GetPermissionByNameUseCase:
+    """Dependency para GetPermissionByNameUseCase"""
+    return GetPermissionByNameUseCase(permission_repo)
 
 
 def get_list_permissions_usecase(

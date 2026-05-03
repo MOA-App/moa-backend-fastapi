@@ -2,11 +2,15 @@ from fastapi import APIRouter, Depends, HTTPException
 from uuid import UUID
 
 from app.modules.auth.application.dtos.permission.permission_bulk import BulkCreatePermissionsDTO
-from app.modules.auth.application.dtos.permission.permission_inputs import CreatePermissionDTO, UpdatePermissionDTO
+from app.modules.auth.application.dtos.permission.permission_inputs import (
+    CreatePermissionDTO,
+    UpdatePermissionDTO,
+)
 from app.modules.auth.application.usecases.permission.bulk_create_permissions_usecase import BulkCreatePermissionsUseCase
 from app.modules.auth.application.usecases.permission.create_permission_usecase import CreatePermissionUseCase
 from app.modules.auth.application.usecases.permission.delete_permission_usecase import DeletePermissionUseCase
 from app.modules.auth.application.usecases.permission.get_permission_usecase import GetPermissionUseCase
+from app.modules.auth.application.usecases.permission.get_permission_by_name_usecase import GetPermissionByNameUseCase
 from app.modules.auth.application.usecases.permission.list_permissions_usecase import ListPermissionsUseCase
 from app.modules.auth.application.usecases.permission.list_resources_usecase import ListResourcesUseCase
 from app.modules.auth.application.usecases.permission.update_permission_usecase import UpdatePermissionUseCase
@@ -20,6 +24,7 @@ from app.modules.auth.domain.exceptions.auth_exceptions import (
 from app.modules.auth.presentation.schemas.permission.create_permission_schema import CreatePermissionRequest
 from app.modules.auth.presentation.schemas.permission.update_permission_schema import UpdatePermissionRequest
 from app.modules.auth.presentation.schemas.permission.bulk_create_request_schema import BulkCreatePermissionsRequest
+from app.modules.auth.presentation.schemas.permission.permission_response import PermissionResponse
 
 from ..dependencies.auth_deps import (
     get_bulk_create_permissions_usecase,
@@ -28,6 +33,7 @@ from ..dependencies.auth_deps import (
     get_list_permissions_usecase,
     get_list_resources_usecase,
     get_permission_usecase,
+    get_permission_by_name_usecase,
     get_update_permission_usecase,
 )
 
@@ -44,7 +50,7 @@ async def create_permission(
     try:
         dto = CreatePermissionDTO(
             nome=body.nome,
-            descricao=body.descricao
+            descricao=body.descricao,
         )
         result = await usecase.execute(dto)
         return {"success": True, "data": result}
@@ -81,6 +87,21 @@ async def get_permission(
         raise HTTPException(status_code=404, detail="Permissão não encontrada")
 
 
+# ================= GET BY NAME =================
+
+@router.get("/search/by-name", response_model=PermissionResponse)
+async def get_permission_by_name(
+    name: str,
+    usecase: GetPermissionByNameUseCase = Depends(get_permission_by_name_usecase),
+):
+    try:
+        result = await usecase.execute(name)
+        return result
+
+    except PermissionNotFoundException:
+        raise HTTPException(status_code=404, detail="Permissão não encontrada")
+
+
 # ================= UPDATE =================
 
 @router.put("/{permission_id}")
@@ -107,6 +128,7 @@ async def delete_permission(
 ):
     try:
         await usecase.execute(str(permission_id))
+
     except PermissionNotFoundException:
         raise HTTPException(status_code=404, detail="Permissão não encontrada")
 
