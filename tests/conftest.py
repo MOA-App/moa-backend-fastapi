@@ -1,6 +1,17 @@
 import pytest
 from unittest.mock import AsyncMock
 
+from app.main import app as fastapi_app
+
+
+# ============================
+# APP FIXTURE
+# ============================
+
+@pytest.fixture
+def app():
+    return fastapi_app
+
 
 # ============================
 # PERMISSION REPOSITORY
