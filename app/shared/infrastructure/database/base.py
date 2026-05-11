@@ -1,22 +1,27 @@
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy import Column, DateTime
-from datetime import datetime
+from datetime import datetime, timezone
 
-Base = declarative_base()
+
+class Base(DeclarativeBase):
+    pass
+
+
 class TimestampMixin:
     """
-    Mixin para adicionar timestamps de criação e atualização.
+    Mixin para timestamps automáticos.
     """
     created_at = Column(
         DateTime,
-        default=datetime.utcnow,
+        default=lambda: datetime.now(timezone.utc),
         nullable=False,
         comment="Data de criação do registro"
     )
+
     updated_at = Column(
         DateTime,
-        default=datetime.utcnow,
-        onupdate=datetime.utcnow,
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
         nullable=False,
         comment="Data da última atualização"
     )
