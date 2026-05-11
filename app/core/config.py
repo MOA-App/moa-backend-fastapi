@@ -19,10 +19,13 @@ class Settings(BaseSettings):
     PORT: int = 8000
     
     # Database
-    DATABASE_URL: str = "postgresql+asyncpg://user:password@localhost:5432/moa_db"
+    DATABASE_URL: str = "postgresql+asyncpg://user:password@db:5432/moa_db"
     DB_ECHO: bool = False
     DB_POOL_SIZE: int = 5
     DB_MAX_OVERFLOW: int = 10
+    POSTGRES_USER: str
+    POSTGRES_PASSWORD: str
+    POSTGRES_DB: str
     
     # JWT
     SECRET_KEY: str = "your-secret-key-change-in-production-please"
