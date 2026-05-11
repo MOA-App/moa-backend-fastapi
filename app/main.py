@@ -11,44 +11,39 @@ from app.shared.presentation.middlewares.security_headers_middleware import Secu
 from app.modules.auth.setup import setup_auth_module
 from app.modules.products.presentation.routes.category_routes import router as category_router
 from app.modules.products.presentation.routes.product_routes import router as product_router
-
 from app.shared.presentation.exceptions.http_exceptions import register_exception_handlers
 
-# Importar modelos para que o Base.metadata conheça as tabelas
 
-
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------
 # LOGGING
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------
 
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
+
 logger = logging.getLogger(__name__)
 
 
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------
 # LIFESPAN
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("🚀 Starting application...")
     logger.info(f"📝 Environment: {settings.ENVIRONMENT}")
-    logger.info(
-        f"🗄️  Database: "
-        f"{settings.DATABASE_URL.split('@')[1] if '@' in settings.DATABASE_URL else 'Not configured'}"
-    )
+    logger.info("🗄️ Database configured")
 
     yield
 
     logger.info("🛑 Shutting down application...")
 
 
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------
 # APP
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------
 
 app = FastAPI(
     title=settings.APP_NAME,
@@ -60,31 +55,37 @@ app = FastAPI(
     openapi_url="/openapi.json" if settings.DEBUG else None,
 )
 
-# 🔥 mantém isso (veio da main)
+
+# ------------------------------------------------------------------
+# EXCEPTION HANDLERS (GLOBAL)
+# ------------------------------------------------------------------
+
 register_exception_handlers(app)
 
 
-# -----------------------------------------------------------------------------
-# GLOBAL MIDDLEWARES
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------
+# MIDDLEWARES (ordem importa)
+# ------------------------------------------------------------------
 
 setup_cors(app)
-app.add_middleware(RequestIdMiddleware)
+
 app.add_middleware(SecurityHeadersMiddleware)
+app.add_middleware(RequestIdMiddleware)
 
 
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------
 # MODULES / ROUTERS
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------
 
 setup_auth_module(app)
+
 app.include_router(category_router, prefix="/api/v1")
 app.include_router(product_router, prefix="/api/v1")
 
 
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------
 # ROOT ENDPOINTS
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------
 
 @app.get("/", tags=["Root"])
 async def root():
@@ -101,14 +102,15 @@ async def root():
 async def health_check():
     return {
         "status": "healthy",
+        "service": settings.APP_NAME,
         "version": settings.VERSION,
         "environment": settings.ENVIRONMENT,
     }
 
 
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------
 # GLOBAL EXCEPTION HANDLERS
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------
 
 @app.exception_handler(StarletteHTTPException)
 async def http_exception_handler(request: Request, exc: StarletteHTTPException):
@@ -124,7 +126,8 @@ async def http_exception_handler(request: Request, exc: StarletteHTTPException):
 
 @app.exception_handler(Exception)
 async def unhandled_exception_handler(request: Request, exc: Exception):
-    logger.error("Unhandled exception", exc_info=True)
+    logger.exception("Unhandled exception")
+
     return JSONResponse(
         status_code=500,
         content={
@@ -134,9 +137,9 @@ async def unhandled_exception_handler(request: Request, exc: Exception):
     )
 
 
-# -----------------------------------------------------------------------------
-# ENTRYPOINT (DEV)
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------
+# ENTRYPOINT (DEV ONLY)
+# ------------------------------------------------------------------
 
 if __name__ == "__main__":
     import uvicorn
