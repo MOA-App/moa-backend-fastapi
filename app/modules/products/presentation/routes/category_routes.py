@@ -17,6 +17,11 @@ from ...domain.exceptions.category_exceptions import (
     CategoryAlreadyExistsException,
     CategoryNotFoundException
 )
+from ..schemas.category_schemas import (
+    ConflictErrorSchema,
+    NotFoundErrorSchema,
+    ValidationErrorSchema,
+)
 
 router = APIRouter(prefix="/categories", tags=["Categories"])
 
@@ -31,7 +36,11 @@ def get_category_repository(db: AsyncSession = Depends(get_db)) -> CategoryRepos
     response_model=CategoryResponseDTO,
     status_code=status.HTTP_201_CREATED,
     summary="Criar categoria",
-    description="Cria uma nova categoria de produto"
+    description="Cria uma nova categoria de produto",
+    responses={
+        status.HTTP_409_CONFLICT: {"model": ConflictErrorSchema},
+        status.HTTP_422_UNPROCESSABLE_ENTITY: {"model": ValidationErrorSchema},
+    },
 )
 async def create_category(
     data: CategoryCreateDTO,
@@ -66,7 +75,10 @@ async def list_categories(
     "/search/by-name",
     response_model=CategoryResponseDTO,
     summary="Buscar categoria por nome",
-    description="Busca uma categoria pelo nome"
+    description="Busca uma categoria pelo nome",
+    responses={
+        status.HTTP_404_NOT_FOUND: {"model": NotFoundErrorSchema},
+    },
 )
 async def get_category_by_name(
     name: str = Query(..., min_length=1, description="Nome da categoria"),
@@ -87,7 +99,10 @@ async def get_category_by_name(
     "/{category_id}",
     response_model=CategoryResponseDTO,
     summary="Buscar categoria",
-    description="Busca uma categoria pelo ID"
+    description="Busca uma categoria pelo ID",
+    responses={
+        status.HTTP_404_NOT_FOUND: {"model": NotFoundErrorSchema},
+    },
 )
 async def get_category(
     category_id: str,
@@ -108,7 +123,10 @@ async def get_category(
     "/{category_id}",
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Excluir categoria",
-    description="Exclui uma categoria pelo ID"
+    description="Exclui uma categoria pelo ID",
+    responses={
+        status.HTTP_404_NOT_FOUND: {"model": NotFoundErrorSchema},
+    },
 )
 async def delete_category(
     category_id: str,
