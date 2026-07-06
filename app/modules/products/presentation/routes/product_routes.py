@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from app.shared.infrastructure.database.session import get_db
 from ...application.dtos.create_product_dto import CreateProductDTO, UpdateProductDTO
@@ -18,6 +18,14 @@ from ...domain.exceptions.product_exceptions import (
     ProductAlreadyExistsException
 )
 from ...domain.exceptions.category_exceptions import CategoryNotFoundException
+from ..schemas.product_schemas import (
+    ProductNotFoundErrorSchema,
+    ProductConflictErrorSchema,
+    CategoryNotFoundErrorSchema,
+    ValidationErrorSchema,
+    ProductStatsByCategorySchema,
+    ProductStatsTotalSchema,
+)
 
 router = APIRouter(prefix="/products", tags=["Products"])
 
@@ -37,7 +45,12 @@ def get_category_repository(db: AsyncSession = Depends(get_db)) -> CategoryRepos
     response_model=ProductResponseDTO,
     status_code=status.HTTP_201_CREATED,
     summary="Criar produto",
-    description="Cria um novo produto"
+    description="Cria um novo produto",
+    responses={
+        status.HTTP_409_CONFLICT: {"model": ProductConflictErrorSchema},
+        status.HTTP_404_NOT_FOUND: {"model": CategoryNotFoundErrorSchema},
+        status.HTTP_422_UNPROCESSABLE_ENTITY: {"model": ValidationErrorSchema},
+    },
 )
 async def create_product(
     data: CreateProductDTO,
@@ -102,7 +115,10 @@ async def search_products(
     "/search/by-sku",
     response_model=ProductResponseDTO,
     summary="Buscar produto por SKU",
-    description="Busca um produto pelo código SKU"
+    description="Busca um produto pelo código SKU",
+    responses={
+        status.HTTP_404_NOT_FOUND: {"model": ProductNotFoundErrorSchema},
+    },
 )
 async def get_product_by_sku(
     sku: str = Query(..., min_length=1, description="Código SKU do produto"),
@@ -123,7 +139,10 @@ async def get_product_by_sku(
     "/{product_id}",
     response_model=ProductResponseDTO,
     summary="Buscar produto por ID",
-    description="Busca um produto pelo ID"
+    description="Busca um produto pelo ID",
+    responses={
+        status.HTTP_404_NOT_FOUND: {"model": ProductNotFoundErrorSchema},
+    },
 )
 async def get_product(
     product_id: str,
@@ -144,7 +163,12 @@ async def get_product(
     "/{product_id}",
     response_model=ProductResponseDTO,
     summary="Atualizar produto",
-    description="Atualiza um produto existente"
+    description="Atualiza um produto existente",
+    responses={
+        status.HTTP_404_NOT_FOUND: {"model": ProductNotFoundErrorSchema},
+        status.HTTP_409_CONFLICT: {"model": ProductConflictErrorSchema},
+        status.HTTP_422_UNPROCESSABLE_ENTITY: {"model": ValidationErrorSchema},
+    },
 )
 async def update_product(
     product_id: str,
@@ -177,7 +201,10 @@ async def update_product(
     "/{product_id}",
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Excluir produto",
-    description="Exclui um produto pelo ID"
+    description="Exclui um produto pelo ID",
+    responses={
+        status.HTTP_404_NOT_FOUND: {"model": ProductNotFoundErrorSchema},
+    },
 )
 async def delete_product(
     product_id: str,
@@ -196,7 +223,7 @@ async def delete_product(
 
 @router.get(
     "/stats/count",
-    response_model=dict,
+    response_model=Union[ProductStatsByCategorySchema, ProductStatsTotalSchema],
     summary="Contagem de produtos",
     description="Retorna estatísticas de quantidade de produtos"
 )
@@ -213,4 +240,3 @@ async def get_product_stats(
     else:
         count = await use_case.count()
         return {"total": count}
-
