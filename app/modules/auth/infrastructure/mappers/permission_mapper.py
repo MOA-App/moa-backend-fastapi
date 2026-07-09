@@ -1,6 +1,6 @@
 from app.modules.auth.infrastructure.models.permission_model import PermissionModel
 from ...domain.entities.permission_entity import Permission
-from ...domain.value_objects.permission_name_vo import PermissionName
+from ...domain.value_objects.permission_vo.permission_name_vo import PermissionName
 from app.shared.domain.value_objects.id_vo import EntityId
 from typing import List
 

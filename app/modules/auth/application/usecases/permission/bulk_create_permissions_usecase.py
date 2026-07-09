@@ -8,7 +8,7 @@ from app.modules.auth.infrastructure.exceptions.repository_exception import Repo
 
 from ....domain.repositories.permission_repository import PermissionRepository
 from ....domain.entities.permission_entity import Permission
-from ....domain.value_objects.permission_name_vo import PermissionName
+from ....domain.value_objects.permission_vo.permission_name_vo import PermissionName
 
 class BulkCreatePermissionsUseCase:
 

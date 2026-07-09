@@ -15,7 +15,7 @@ from app.modules.auth.domain.exceptions.auth_exceptions import (
 )
 from app.shared.domain.value_objects.id_vo import EntityId
 
-from app.modules.auth.domain.value_objects.role_name_vo import RoleName
+from app.modules.auth.domain.value_objects.role_vo.role_name_vo import RoleName
 
 def make_role(name: str, with_id: EntityId | None = None):
     return Role(

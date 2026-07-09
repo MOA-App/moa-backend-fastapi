@@ -2,9 +2,9 @@ from dataclasses import dataclass, replace
 from datetime import datetime, timezone
 from typing import Optional
 
-from app.modules.auth.domain.value_objects.permission_resource_vo import PermissionResource
+from app.modules.auth.domain.value_objects.permission_vo.permission_resource_vo import PermissionResource
 from app.shared.domain.value_objects.id_vo import EntityId
-from ..value_objects.permission_name_vo import PermissionName
+from ..value_objects.permission_vo.permission_name_vo import PermissionName
 
 @dataclass(frozen=True, eq=False)
 class Permission:

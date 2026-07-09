@@ -4,7 +4,7 @@ from app.modules.auth.application.mappers.role_mapper import to_role_response_dt
 from app.modules.auth.domain.entities.role_entity import Role
 from app.modules.auth.domain.exceptions.auth_exceptions import RoleAlreadyExistsException
 from app.modules.auth.domain.repositories.role_repository import RoleRepository
-from app.modules.auth.domain.value_objects.role_name_vo import RoleName
+from app.modules.auth.domain.value_objects.role_vo.role_name_vo import RoleName
 
 
 class CreateRoleUseCase:

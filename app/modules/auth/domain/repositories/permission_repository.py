@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
 from typing import Optional, List
 
-from app.modules.auth.domain.value_objects.permission_resource_vo import PermissionResource
+from app.modules.auth.domain.value_objects.permission_vo.permission_resource_vo import PermissionResource
 
 from ..entities.permission_entity import Permission
-from ..value_objects.permission_name_vo import PermissionName
+from ..value_objects.permission_vo.permission_name_vo import PermissionName
 from app.shared.domain.value_objects.id_vo import EntityId
 
 

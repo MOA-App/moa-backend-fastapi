@@ -1,5 +1,5 @@
 import pytest
-from app.modules.auth.domain.value_objects.permission_resource_vo import PermissionResource
+from app.modules.auth.domain.value_objects.permission_vo.permission_resource_vo import PermissionResource
 
 
 class TestPermissionResource:

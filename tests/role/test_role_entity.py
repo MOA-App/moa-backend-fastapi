@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import MagicMock
 from app.modules.auth.domain.entities.role_entity import Role
-from app.modules.auth.domain.value_objects.role_name_vo import RoleName
+from app.modules.auth.domain.value_objects.role_vo.role_name_vo import RoleName
 from app.shared.domain.value_objects.id_vo import EntityId
 
 

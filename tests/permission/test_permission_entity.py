@@ -1,8 +1,8 @@
 import pytest
 from datetime import datetime, timezone
 from app.modules.auth.domain.entities.permission_entity import Permission
-from app.modules.auth.domain.value_objects.permission_name_vo import PermissionName
-from app.modules.auth.domain.value_objects.permission_resource_vo import PermissionResource
+from app.modules.auth.domain.value_objects.permission_vo.permission_name_vo import PermissionName
+from app.modules.auth.domain.value_objects.permission_vo.permission_resource_vo import PermissionResource
 from app.shared.domain.value_objects.id_vo import EntityId
 
 

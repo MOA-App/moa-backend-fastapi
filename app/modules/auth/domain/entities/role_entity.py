@@ -1,10 +1,10 @@
 from dataclasses import dataclass, field
 from typing import Iterable, List
 
-from app.modules.auth.domain.value_objects.permission_name_vo import PermissionName
+from app.modules.auth.domain.value_objects.permission_vo.permission_name_vo import PermissionName
 from app.shared.domain.value_objects.id_vo import EntityId
 from app.modules.auth.domain.entities.permission_entity import Permission
-from ..value_objects.role_name_vo import RoleName
+from ..value_objects.role_vo.role_name_vo import RoleName
 
 
 @dataclass(eq=False)

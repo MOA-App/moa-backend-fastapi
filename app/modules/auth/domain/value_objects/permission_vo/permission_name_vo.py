@@ -3,7 +3,7 @@ import re
 from typing import List
 
 from app.modules.auth.domain.exceptions.auth_exceptions import InvalidPermissionFormatException
-from app.modules.auth.domain.value_objects.permission_resource_vo import PermissionResource
+from app.modules.auth.domain.value_objects.permission_vo.permission_resource_vo import PermissionResource
 
 
 @dataclass(frozen=True, eq=True)  # ← Adicionar eq=True

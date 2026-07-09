@@ -2,7 +2,7 @@ from app.modules.auth.application.dtos.permission.permission_outputs import Perm
 from app.modules.auth.application.mappers.permission_mapper import PermissionMapper
 from app.modules.auth.domain.exceptions.auth_exceptions import InvalidPermissionFormatException, PermissionNotFoundException
 from app.modules.auth.domain.repositories.permission_repository import PermissionRepository
-from app.modules.auth.domain.value_objects.permission_name_vo import PermissionName
+from app.modules.auth.domain.value_objects.permission_vo.permission_name_vo import PermissionName
 from app.modules.auth.infrastructure.exceptions.repository_exception import RepositoryException
 
 
