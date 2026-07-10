@@ -92,3 +92,46 @@ class InvalidUsernameException(ValueObjectValidationException):
 class InvalidCEPException(ValueObjectValidationException):
     """CEP inválido"""
     pass
+
+# ============================================================================
+# USER EXCEPTIONS
+# ============================================================================
+
+class UserException(AuthException):
+    """Exceção base para erros de usuário"""
+    pass
+
+
+class UserAlreadyExistsException(UserException):
+    """Usuário já existe"""
+    pass
+
+
+class UserNotFoundException(UserException):
+    """Usuário não encontrado"""
+    pass
+
+
+class UserInactiveException(UserException):
+    """Usuário está inativo"""
+    pass
+
+
+class UserAlreadyActiveException(UserException):
+    """Usuário já está ativo"""
+    pass
+
+
+class UserAlreadyInactiveException(UserException):
+    """Usuário já está inativo"""
+    pass
+
+
+class InvalidCredentialsException(UserException):
+    """Credenciais inválidas"""
+    pass
+
+
+class PasswordMismatchException(UserException):
+    """Senha informada não corresponde à senha atual"""
+    pass
