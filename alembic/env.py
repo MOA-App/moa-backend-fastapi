@@ -13,6 +13,7 @@ from app.shared.infrastructure.database.base import Base
 # Importar models para registrar no metadata
 from app.modules.auth.infrastructure.models.permission_model import PermissionModel  # noqa: F401
 from app.modules.auth.infrastructure.models.role_model import RoleModel  # noqa: F401
+from app.modules.auth.infrastructure.models.user_model import UserModel  # noqa: F401
 from app.modules.products.infrastructure.models.category_model import CategoryModel  # noqa: F401
 from app.modules.products.infrastructure.models.product_model import ProductModel  # noqa: F401
 
