@@ -2,6 +2,7 @@ from dataclasses import dataclass, field, replace
 from datetime import datetime, timezone
 from typing import Optional, Iterable
 
+from app.modules.auth.domain.exceptions.auth_exceptions import RoleAlreadyAssignedException, RoleNotAssignedException
 from app.modules.auth.domain.value_objects.user_vo.user_email_vo import Email
 from app.modules.auth.domain.value_objects.user_vo.user_name_vo import UserName
 from app.modules.auth.domain.value_objects.user_vo.user_password_vo import Password
@@ -82,14 +83,16 @@ class User:
         self.password = password
 
     def add_role(self, role: Role) -> None:
-        if role not in self.roles:
-            self.roles.append(role)
+        if role in self.roles:
+            raise RoleAlreadyAssignedException()
+
+        self.roles.append(role)
 
     def remove_role(self, role: Role) -> None:
-        self.roles = [
-            r for r in self.roles
-            if r.id != role.id
-        ]
+        if role not in self.roles:
+            raise RoleNotAssignedException()
+
+        self.roles.remove(role)
 
     def has_role(self, role_name: str) -> bool:
         return any(
