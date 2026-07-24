@@ -16,7 +16,6 @@ def make_permission(nome: str = "users.read") -> MagicMock:
 
 
 class TestRoleCreate:
-
     def test_create_generates_id(self):
         role = Role.create(RoleName("admin"))
         assert role.id is not None
@@ -36,7 +35,6 @@ class TestRoleCreate:
 
 
 class TestRoleReconstruct:
-
     def test_reconstruct_preserves_id(self):
         entity_id = EntityId.generate()
         role = Role.reconstruct(
@@ -57,7 +55,6 @@ class TestRoleReconstruct:
 
 
 class TestRoleUpdateName:
-
     def test_update_name_changes_nome(self):
         role = Role.create(RoleName("editor"))
         role.update_name(RoleName("super_editor"))
@@ -65,7 +62,6 @@ class TestRoleUpdateName:
 
 
 class TestRolePermissions:
-
     def test_add_permission(self):
         role = Role.create(RoleName("admin"))
         perm = make_permission("users.create")
@@ -110,7 +106,6 @@ class TestRolePermissions:
 
 
 class TestRoleIdentity:
-
     def test_two_roles_with_same_id_are_equal(self):
         entity_id = EntityId.generate()
         role1 = Role.reconstruct(id=entity_id, nome=RoleName("admin"), permissions=[])

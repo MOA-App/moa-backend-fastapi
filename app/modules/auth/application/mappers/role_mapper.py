@@ -6,10 +6,7 @@ from app.modules.auth.domain.entities.role_entity import Role
 def to_role_response_dto(role: Role) -> RoleResponseDTO:
     """Converte uma entidade Role para RoleResponseDTO."""
 
-    permissions = [
-        PermissionMapper.to_summary_dto(perm)
-        for perm in role.permissions
-    ]
+    permissions = [PermissionMapper.to_summary_dto(perm) for perm in role.permissions]
 
     return RoleResponseDTO(
         id=role.id.value,

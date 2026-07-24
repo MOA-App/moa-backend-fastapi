@@ -1,12 +1,25 @@
 import pytest
 from uuid import uuid4
 
-from app.modules.auth.application.usecases.role.create_role_usecase import CreateRoleUseCase
-from app.modules.auth.application.usecases.role.get_role_by_id_usecase import GetRoleByIdUseCase
-from app.modules.auth.application.usecases.role.list_roles_usecase import ListRolesUseCase
-from app.modules.auth.application.usecases.role.update_role_usecase import UpdateRoleUseCase
-from app.modules.auth.application.usecases.role.delete_role_usecase import DeleteRoleUseCase
-from app.modules.auth.application.dtos.role.role_inputs import CreateRoleDTO, UpdateRoleDTO
+from app.modules.auth.application.usecases.role.create_role_usecase import (
+    CreateRoleUseCase,
+)
+from app.modules.auth.application.usecases.role.get_role_by_id_usecase import (
+    GetRoleByIdUseCase,
+)
+from app.modules.auth.application.usecases.role.list_roles_usecase import (
+    ListRolesUseCase,
+)
+from app.modules.auth.application.usecases.role.update_role_usecase import (
+    UpdateRoleUseCase,
+)
+from app.modules.auth.application.usecases.role.delete_role_usecase import (
+    DeleteRoleUseCase,
+)
+from app.modules.auth.application.dtos.role.role_inputs import (
+    CreateRoleDTO,
+    UpdateRoleDTO,
+)
 
 from app.modules.auth.domain.entities.role_entity import Role
 from app.modules.auth.domain.exceptions.auth_exceptions import (
@@ -17,18 +30,21 @@ from app.shared.domain.value_objects.id_vo import EntityId
 
 from app.modules.auth.domain.value_objects.role_vo.role_name_vo import RoleName
 
+
 def make_role(name: str, with_id: EntityId | None = None):
     return Role(
         id=with_id or EntityId(str(uuid4())),
         nome=RoleName(name),
         _permissions=[],
     )
+
+
 # ============================================================================
 # CREATE
 # ============================================================================
 
-class TestCreateRoleUseCase:
 
+class TestCreateRoleUseCase:
     @pytest.fixture
     def usecase(self, mock_role_repository):
         return CreateRoleUseCase(mock_role_repository)
@@ -56,8 +72,8 @@ class TestCreateRoleUseCase:
 # GET BY ID
 # ============================================================================
 
-class TestGetRoleByIdUseCase:
 
+class TestGetRoleByIdUseCase:
     @pytest.fixture
     def usecase(self, mock_role_repository):
         return GetRoleByIdUseCase(mock_role_repository)
@@ -82,8 +98,8 @@ class TestGetRoleByIdUseCase:
 # LIST
 # ============================================================================
 
-class TestListRolesUseCase:
 
+class TestListRolesUseCase:
     @pytest.fixture
     def usecase(self, mock_role_repository):
         return ListRolesUseCase(mock_role_repository)
@@ -110,8 +126,8 @@ class TestListRolesUseCase:
 # UPDATE
 # ============================================================================
 
-class TestUpdateRoleUseCase:
 
+class TestUpdateRoleUseCase:
     @pytest.fixture
     def usecase(self, mock_role_repository):
         return UpdateRoleUseCase(mock_role_repository)
@@ -137,12 +153,16 @@ class TestUpdateRoleUseCase:
         with pytest.raises(RoleNotFoundException):
             await usecase.execute(UpdateRoleDTO(role_id=uuid4(), name="any"))
 
-    async def test_raises_when_new_name_already_taken(self, usecase, mock_role_repository):
+    async def test_raises_when_new_name_already_taken(
+        self, usecase, mock_role_repository
+    ):
         role = make_role("editor")
         other_role = make_role("super_editor")
 
         mock_role_repository.find_by_id.return_value = role
-        mock_role_repository.find_by_name.return_value = other_role  # nome ocupado por outra role
+        mock_role_repository.find_by_name.return_value = (
+            other_role  # nome ocupado por outra role
+        )
 
         with pytest.raises(RoleAlreadyExistsException):
             await usecase.execute(
@@ -170,8 +190,8 @@ class TestUpdateRoleUseCase:
 # DELETE
 # ============================================================================
 
-class TestDeleteRoleUseCase:
 
+class TestDeleteRoleUseCase:
     @pytest.fixture
     def usecase(self, mock_role_repository):
         return DeleteRoleUseCase(mock_role_repository)

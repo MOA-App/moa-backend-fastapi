@@ -6,12 +6,22 @@ import logging
 
 from app.core.config import settings
 from app.shared.presentation.middlewares.cors_middleware import setup_cors
-from app.shared.presentation.middlewares.request_id_middleware import RequestIdMiddleware
-from app.shared.presentation.middlewares.security_headers_middleware import SecurityHeadersMiddleware
+from app.shared.presentation.middlewares.request_id_middleware import (
+    RequestIdMiddleware,
+)
+from app.shared.presentation.middlewares.security_headers_middleware import (
+    SecurityHeadersMiddleware,
+)
 from app.modules.auth.setup import setup_auth_module
-from app.modules.products.presentation.routes.category_routes import router as category_router
-from app.modules.products.presentation.routes.product_routes import router as product_router
-from app.shared.presentation.exceptions.http_exceptions import register_exception_handlers
+from app.modules.products.presentation.routes.category_routes import (
+    router as category_router,
+)
+from app.modules.products.presentation.routes.product_routes import (
+    router as product_router,
+)
+from app.shared.presentation.exceptions.http_exceptions import (
+    register_exception_handlers,
+)
 
 
 # ------------------------------------------------------------------
@@ -19,8 +29,7 @@ from app.shared.presentation.exceptions.http_exceptions import register_exceptio
 # ------------------------------------------------------------------
 
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 
 logger = logging.getLogger(__name__)
@@ -29,6 +38,7 @@ logger = logging.getLogger(__name__)
 # ------------------------------------------------------------------
 # LIFESPAN
 # ------------------------------------------------------------------
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -87,6 +97,7 @@ app.include_router(product_router, prefix="/api/v1")
 # ROOT ENDPOINTS
 # ------------------------------------------------------------------
 
+
 @app.get("/", tags=["Root"])
 async def root():
     return {
@@ -111,6 +122,7 @@ async def health_check():
 # ------------------------------------------------------------------
 # GLOBAL EXCEPTION HANDLERS
 # ------------------------------------------------------------------
+
 
 @app.exception_handler(StarletteHTTPException)
 async def http_exception_handler(request: Request, exc: StarletteHTTPException):

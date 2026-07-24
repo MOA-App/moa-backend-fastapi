@@ -5,6 +5,7 @@ from ..entities.role_entity import Role
 from ..value_objects.role_vo.role_name_vo import RoleName
 from app.shared.domain.value_objects.id_vo import EntityId
 
+
 class RoleRepository(ABC):
     """Interface do Repository de Role (Port)"""
 

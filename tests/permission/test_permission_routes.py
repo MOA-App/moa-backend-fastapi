@@ -31,6 +31,7 @@ async def client(app):
 
 # ================= CREATE =================
 
+
 async def test_create_permission(client, app):
     uc = AsyncMock()
     uc.execute.return_value = PERMISSION_RESPONSE
@@ -48,6 +49,7 @@ async def test_create_permission(client, app):
 
 # ================= LIST =================
 
+
 async def test_list_permissions(client, app):
     uc = AsyncMock()
     uc.execute.return_value = [PERMISSION_RESPONSE]
@@ -62,6 +64,7 @@ async def test_list_permissions(client, app):
 
 # ================= GET =================
 
+
 async def test_get_permission(client, app):
     uc = AsyncMock()
     uc.execute.return_value = PERMISSION_RESPONSE
@@ -74,6 +77,7 @@ async def test_get_permission(client, app):
 
 
 # ================= UPDATE =================
+
 
 async def test_update_permission(client, app):
     uc = AsyncMock()
@@ -91,6 +95,7 @@ async def test_update_permission(client, app):
 
 # ================= DELETE =================
 
+
 async def test_delete_permission(client, app):
     uc = AsyncMock()
     uc.execute.return_value = None
@@ -103,6 +108,7 @@ async def test_delete_permission(client, app):
 
 
 # ================= BULK =================
+
 
 async def test_bulk_create(client, app):
     uc = AsyncMock()
@@ -119,6 +125,7 @@ async def test_bulk_create(client, app):
 
 
 # ================= RESOURCES =================
+
 
 async def test_list_resources(client, app):
     uc = AsyncMock()

@@ -3,7 +3,6 @@ from app.modules.auth.domain.value_objects.role_vo.role_name_vo import RoleName
 
 
 class TestRoleName:
-
     # -------- Criação válida --------
 
     def test_create_valid_name(self):

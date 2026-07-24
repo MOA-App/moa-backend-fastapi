@@ -20,58 +20,51 @@ from typing import List, Optional
 # ERROR SCHEMAS
 # ============================================================================
 
+
 class ErrorResponseSchema(BaseModel):
     """Schema padrão de erro retornado pela API"""
+
     detail: str = Field(..., description="Mensagem descritiva do erro")
 
     model_config = {
-        "json_schema_extra": {
-            "example": {
-                "detail": "Produto não encontrado"
-            }
-        }
+        "json_schema_extra": {"example": {"detail": "Produto não encontrado"}}
     }
 
 
 class ProductNotFoundErrorSchema(ErrorResponseSchema):
     """Schema de erro 404 - produto não encontrado"""
+
     model_config = {
         "json_schema_extra": {
-            "example": {
-                "detail": "Produto com ID 'xxxx-xxxx' não encontrado"
-            }
+            "example": {"detail": "Produto com ID 'xxxx-xxxx' não encontrado"}
         }
     }
 
 
 class ProductConflictErrorSchema(ErrorResponseSchema):
     """Schema de erro 409 - produto já existe (SKU duplicado)"""
+
     model_config = {
         "json_schema_extra": {
-            "example": {
-                "detail": "Produto com SKU 'ABC-123' já existe"
-            }
+            "example": {"detail": "Produto com SKU 'ABC-123' já existe"}
         }
     }
 
 
 class CategoryNotFoundErrorSchema(ErrorResponseSchema):
     """Schema de erro 404 - categoria referenciada não encontrada"""
+
     model_config = {
         "json_schema_extra": {
-            "example": {
-                "detail": "Categoria com ID 'xxxx-xxxx' não encontrada"
-            }
+            "example": {"detail": "Categoria com ID 'xxxx-xxxx' não encontrada"}
         }
     }
 
 
 class ValidationErrorSchema(BaseModel):
     """Schema de erro de validação (422)"""
-    detail: List[dict] = Field(
-        ...,
-        description="Lista de erros de validação por campo"
-    )
+
+    detail: List[dict] = Field(..., description="Lista de erros de validação por campo")
 
     model_config = {
         "json_schema_extra": {
@@ -80,7 +73,7 @@ class ValidationErrorSchema(BaseModel):
                     {
                         "loc": ["body", "price"],
                         "msg": "ensure this value is greater than 0",
-                        "type": "value_error.number.not_gt"
+                        "type": "value_error.number.not_gt",
                     }
                 ]
             }
@@ -92,8 +85,10 @@ class ValidationErrorSchema(BaseModel):
 # QUERY PARAMS SCHEMAS
 # ============================================================================
 
+
 class ProductListQuerySchema(BaseModel):
     """Schema para query params da listagem de produtos"""
+
     skip: int = Field(0, ge=0, description="Número de registros a pular")
     limit: int = Field(100, ge=1, le=1000, description="Limite de registros")
     category_id: Optional[str] = Field(None, description="Filtrar por categoria")
@@ -102,11 +97,13 @@ class ProductListQuerySchema(BaseModel):
 
 class ProductSearchQuerySchema(BaseModel):
     """Schema para query params da busca de produtos por nome"""
+
     name: str = Field(..., min_length=1, description="Nome ou parte do nome do produto")
 
 
 class ProductSkuQuerySchema(BaseModel):
     """Schema para query params da busca por SKU"""
+
     sku: str = Field(..., min_length=1, description="Código SKU do produto")
 
 
@@ -114,8 +111,10 @@ class ProductSkuQuerySchema(BaseModel):
 # LIST / PAGINATION SCHEMAS
 # ============================================================================
 
+
 class ProductListResponseSchema(BaseModel):
     """Schema de resposta para listagem de produtos com metadados"""
+
     total: int = Field(..., description="Total de produtos encontrados")
     skip: int = Field(..., description="Registros pulados")
     limit: int = Field(..., description="Limite aplicado")
@@ -138,9 +137,9 @@ class ProductListResponseSchema(BaseModel):
                         "stock_quantity": 15,
                         "is_active": True,
                         "created_at": "2026-01-01T10:00:00",
-                        "updated_at": "2026-01-01T10:00:00"
+                        "updated_at": "2026-01-01T10:00:00",
                     }
-                ]
+                ],
             }
         }
     }
@@ -150,8 +149,10 @@ class ProductListResponseSchema(BaseModel):
 # STATS SCHEMAS
 # ============================================================================
 
+
 class ProductStatsByCategorySchema(BaseModel):
     """Schema de resposta para contagem de produtos filtrada por categoria"""
+
     category_id: str = Field(..., description="ID da categoria filtrada")
     count: int = Field(..., description="Quantidade de produtos na categoria")
 
@@ -159,7 +160,7 @@ class ProductStatsByCategorySchema(BaseModel):
         "json_schema_extra": {
             "example": {
                 "category_id": "8f14e45f-ceea-4c7d-8a6e-1f2b3c4d5e6f",
-                "count": 12
+                "count": 12,
             }
         }
     }
@@ -167,21 +168,18 @@ class ProductStatsByCategorySchema(BaseModel):
 
 class ProductStatsTotalSchema(BaseModel):
     """Schema de resposta para contagem total de produtos"""
+
     total: int = Field(..., description="Quantidade total de produtos cadastrados")
 
-    model_config = {
-        "json_schema_extra": {
-            "example": {
-                "total": 128
-            }
-        }
-    }
+    model_config = {"json_schema_extra": {"example": {"total": 128}}}
 
 
 # ============================================================================
 # PATH PARAM SCHEMA (opcional, útil para validar UUID nas rotas)
 # ============================================================================
 
+
 class ProductIdPathSchema(BaseModel):
     """Schema para validação do path param product_id"""
+
     product_id: str = Field(..., description="UUID do produto")

@@ -4,12 +4,11 @@ from app.modules.auth.application.dtos.permission.permission_outputs import (
     PermissionResponseDTO,
     PermissionSummaryDTO,
     PermissionsByResourceDTO,
-    ResourceActionsDTO
+    ResourceActionsDTO,
 )
 
 
 class PermissionMapper:
-
     @staticmethod
     def to_response_dto(permission: Permission) -> PermissionResponseDTO:
         return PermissionResponseDTO(
@@ -18,7 +17,7 @@ class PermissionMapper:
             descricao=permission.descricao,
             data_criacao=permission.data_criacao,
             resource=permission.nome.resource.value,
-            action=permission.nome.action
+            action=permission.nome.action,
         )
 
     @staticmethod
@@ -26,14 +25,12 @@ class PermissionMapper:
         return PermissionSummaryDTO(
             id=permission.id.value,
             nome=permission.nome.value,
-            descricao=permission.descricao
+            descricao=permission.descricao,
         )
-    
+
     @staticmethod
     def to_detail_dto(
-        permission: Permission,
-        roles_count: int = 0,
-        users_count: int = 0
+        permission: Permission, roles_count: int = 0, users_count: int = 0
     ) -> PermissionDetailDTO:
         return PermissionDetailDTO(
             id=permission.id.value,
@@ -43,12 +40,12 @@ class PermissionMapper:
             resource=permission.nome.resource.value,
             action=permission.nome.action,
             roles_count=roles_count,
-            users_count=users_count
+            users_count=users_count,
         )
-    
+
     @staticmethod
     def group_by_resource(
-        permissions: list[Permission]
+        permissions: list[Permission],
     ) -> list[PermissionsByResourceDTO]:
 
         grouped: dict[str, list[PermissionResponseDTO]] = {}
@@ -62,16 +59,14 @@ class PermissionMapper:
 
         return [
             PermissionsByResourceDTO(
-                resource=resource,
-                permissions=perms,
-                total=len(perms)
+                resource=resource, permissions=perms, total=len(perms)
             )
             for resource, perms in grouped.items()
         ]
-    
+
     @staticmethod
     def group_actions_by_resource(
-        permissions: list[Permission]
+        permissions: list[Permission],
     ) -> list[ResourceActionsDTO]:
 
         grouped: dict[str, set[str]] = {}
@@ -83,9 +78,6 @@ class PermissionMapper:
             grouped.setdefault(resource, set()).add(action)
 
         return [
-            ResourceActionsDTO(
-                resource=resource,
-                actions=sorted(actions)
-            )
+            ResourceActionsDTO(resource=resource, actions=sorted(actions))
             for resource, actions in grouped.items()
         ]

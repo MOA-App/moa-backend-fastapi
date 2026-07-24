@@ -2,9 +2,12 @@ from dataclasses import dataclass, replace
 from datetime import datetime, timezone
 from typing import Optional
 
-from app.modules.auth.domain.value_objects.permission_vo.permission_resource_vo import PermissionResource
+from app.modules.auth.domain.value_objects.permission_vo.permission_resource_vo import (
+    PermissionResource,
+)
 from app.shared.domain.value_objects.id_vo import EntityId
 from ..value_objects.permission_vo.permission_name_vo import PermissionName
+
 
 @dataclass(frozen=True, eq=False)
 class Permission:
@@ -21,9 +24,7 @@ class Permission:
 
     @classmethod
     def create(
-        cls,
-        nome: PermissionName,
-        descricao: Optional[str] = None
+        cls, nome: PermissionName, descricao: Optional[str] = None
     ) -> "Permission":
         """
         Cria uma nova permissão.
@@ -34,7 +35,7 @@ class Permission:
             descricao=descricao,
             data_criacao=datetime.now(timezone.utc),
         )
-    
+
     @classmethod
     def reconstruct(
         cls,
@@ -49,7 +50,7 @@ class Permission:
         return cls(id=id, nome=nome, descricao=descricao, data_criacao=data_criacao)
 
     # ---------- Behavior ----------
-    
+
     def update_description(self, new_description: Optional[str]) -> "Permission":
         """
         Atualiza a descrição da permissão.
@@ -67,39 +68,35 @@ class Permission:
         Verifica se a permissão representa uma ação específica.
         """
         return self.nome.action == action.lower()
-    
+
     def matches(self, pattern: str) -> bool:
         """
         Verifica se a permissão corresponde a um padrão com wildcard (*).
         """
         if "*" not in pattern:
             return self.nome.value == pattern.lower()
-        
+
         resource_pattern, action_pattern = pattern.lower().split(".", 1)
-        
+
         resource_match = (
-            resource_pattern == "*" or 
-            self.nome.resource.value == resource_pattern
+            resource_pattern == "*" or self.nome.resource.value == resource_pattern
         )
-        action_match = (
-            action_pattern == "*" or 
-            self.nome.action == action_pattern
-        )
-        
+        action_match = action_pattern == "*" or self.nome.action == action_pattern
+
         return resource_match and action_match
-    
+
     def get_full_name(self) -> str:
         """
         Retorna o nome completo da permissão.
         """
         return self.nome.value
-    
+
     def resource(self) -> str:
         """
         Retorna o recurso da permissão.
         """
         return self.nome.resource.value
-    
+
     def action(self) -> str:
         """
         Retorna a ação da permissão.
@@ -125,7 +122,7 @@ class Permission:
         Representação amigável.
         """
         return f"Permission({self.nome.value})"
-    
+
     def __repr__(self) -> str:
         """
         Representação detalhada para debugging.

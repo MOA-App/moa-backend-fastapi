@@ -32,9 +32,7 @@ class ProductRepositoryImpl(ProductRepositoryInterface):
 
         except IntegrityError as e:
             await self.session.rollback()
-            raise ProductIntegrityException(
-                details=str(e.orig) if e.orig else str(e)
-            )
+            raise ProductIntegrityException(details=str(e.orig) if e.orig else str(e))
 
         except (DBAPIError, ConnectionRefusedError) as e:
             await self.session.rollback()
@@ -158,9 +156,7 @@ class ProductRepositoryImpl(ProductRepositoryInterface):
 
         except IntegrityError as e:
             await self.session.rollback()
-            raise ProductIntegrityException(
-                details=str(e.orig) if e.orig else str(e)
-            )
+            raise ProductIntegrityException(details=str(e.orig) if e.orig else str(e))
 
         except (DBAPIError, ConnectionRefusedError) as e:
             await self.session.rollback()
@@ -185,9 +181,7 @@ class ProductRepositoryImpl(ProductRepositoryInterface):
 
         except IntegrityError as e:
             await self.session.rollback()
-            raise ProductIntegrityException(
-                details=str(e.orig) if e.orig else str(e)
-            )
+            raise ProductIntegrityException(details=str(e.orig) if e.orig else str(e))
 
         except (DBAPIError, ConnectionRefusedError) as e:
             await self.session.rollback()

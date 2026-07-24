@@ -2,7 +2,9 @@ from app.modules.auth.application.dtos.role.role_inputs import CreateRoleDTO
 from app.modules.auth.application.dtos.role.role_outputs import RoleResponseDTO
 from app.modules.auth.application.mappers.role_mapper import to_role_response_dto
 from app.modules.auth.domain.entities.role_entity import Role
-from app.modules.auth.domain.exceptions.auth_exceptions import RoleAlreadyExistsException
+from app.modules.auth.domain.exceptions.auth_exceptions import (
+    RoleAlreadyExistsException,
+)
 from app.modules.auth.domain.repositories.role_repository import RoleRepository
 from app.modules.auth.domain.value_objects.role_vo.role_name_vo import RoleName
 

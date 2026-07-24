@@ -1,7 +1,9 @@
 from abc import ABC, abstractmethod
 from typing import Optional, List
 
-from app.modules.auth.domain.value_objects.permission_vo.permission_resource_vo import PermissionResource
+from app.modules.auth.domain.value_objects.permission_vo.permission_resource_vo import (
+    PermissionResource,
+)
 
 from ..entities.permission_entity import Permission
 from ..value_objects.permission_vo.permission_name_vo import PermissionName
@@ -142,7 +144,6 @@ class PermissionRepository(ABC):
         """Lista todos os recursos distintos"""
         pass
 
-
     @abstractmethod
     async def list_actions(self, resource: PermissionResource) -> List[str]:
         """Lista ações disponíveis para um recurso"""
@@ -151,7 +152,6 @@ class PermissionRepository(ABC):
     @abstractmethod
     async def find_by_names(self, names: List[PermissionName]) -> List[Permission]:
         pass
-
 
     @abstractmethod
     async def count(self) -> int:

@@ -6,11 +6,13 @@ Estas exceções representam regras de negócio violadas.
 
 class AuthException(Exception):
     """Exceção base para o módulo de autenticação"""
+
     pass
 
 
 class DomainValidationException(AuthException):
     """Exceção base para erros de validação de domínio"""
+
     pass
 
 
@@ -18,23 +20,28 @@ class DomainValidationException(AuthException):
 # PERMISSION EXCEPTIONS
 # ============================================================================
 
+
 class PermissionException(AuthException):
     """Exceção base para erros de permissão"""
+
     pass
 
 
 class PermissionAlreadyExistsException(PermissionException):
     """Permissão já existe"""
+
     pass
 
 
 class PermissionNotFoundException(PermissionException):
     """Permissão não encontrada"""
+
     pass
 
 
 class InvalidPermissionFormatException(PermissionException):
     """Formato da permissão é inválido"""
+
     pass
 
 
@@ -42,53 +49,67 @@ class InvalidPermissionFormatException(PermissionException):
 # ROLE EXCEPTIONS
 # ============================================================================
 
+
 class RoleException(AuthException):
     """Exceção base para erros de role"""
+
     pass
 
 
 class RoleAlreadyExistsException(RoleException):
     """Role já existe"""
+
     pass
 
 
 class RoleAlreadyAssignedException(RoleException):
     """Role já está atribuída ao usuário"""
+
     pass
 
 
 class RoleNotAssignedException(RoleException):
     """Role não está atribuída ao usuário"""
+
     pass
+
 
 class RoleNotFoundException(RoleException):
     """Role não encontrada"""
+
     pass
+
 
 # ============================================================================
 # VALUE OBJECT EXCEPTIONS
 # ============================================================================
 
+
 class ValueObjectValidationException(DomainValidationException):
     """Erro de validação em Value Object"""
+
     pass
 
 
 class InvalidEmailException(ValueObjectValidationException):
     """Email inválido"""
+
     pass
 
 
 class InvalidPasswordException(ValueObjectValidationException):
     """Senha inválida"""
+
     pass
 
 
 class InvalidUsernameException(ValueObjectValidationException):
     """Username inválido"""
+
     pass
 
 
 class InvalidCEPException(ValueObjectValidationException):
     """CEP inválido"""
+
     pass

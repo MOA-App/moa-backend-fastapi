@@ -1,5 +1,6 @@
 import re
 
+
 class PermissionResource:
     __slots__ = ("_value",)
 

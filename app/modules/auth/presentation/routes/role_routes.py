@@ -2,19 +2,44 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, status
 
-from app.modules.auth.application.dtos.role.role_inputs import AddPermissionToRoleDTO, CreateRoleDTO, RemovePermissionFromRoleDTO, UpdateRoleDTO
-from app.modules.auth.application.usecases.role.create_role_usecase import CreateRoleUseCase
-from app.modules.auth.application.usecases.role.get_role_by_id_usecase import GetRoleByIdUseCase
-from app.modules.auth.application.usecases.role.list_roles_usecase import ListRolesUseCase
-from app.modules.auth.application.usecases.role.update_role_usecase import UpdateRoleUseCase
-from app.modules.auth.application.usecases.role.delete_role_usecase import DeleteRoleUseCase
-from app.modules.auth.application.usecases.role.add_permission_to_role_usecase import AddPermissionToRoleUseCase
-from app.modules.auth.application.usecases.role.remove_permission_from_role_usecase import RemovePermissionFromRoleUseCase
+from app.modules.auth.application.dtos.role.role_inputs import (
+    AddPermissionToRoleDTO,
+    CreateRoleDTO,
+    RemovePermissionFromRoleDTO,
+    UpdateRoleDTO,
+)
+from app.modules.auth.application.usecases.role.create_role_usecase import (
+    CreateRoleUseCase,
+)
+from app.modules.auth.application.usecases.role.get_role_by_id_usecase import (
+    GetRoleByIdUseCase,
+)
+from app.modules.auth.application.usecases.role.list_roles_usecase import (
+    ListRolesUseCase,
+)
+from app.modules.auth.application.usecases.role.update_role_usecase import (
+    UpdateRoleUseCase,
+)
+from app.modules.auth.application.usecases.role.delete_role_usecase import (
+    DeleteRoleUseCase,
+)
+from app.modules.auth.application.usecases.role.add_permission_to_role_usecase import (
+    AddPermissionToRoleUseCase,
+)
+from app.modules.auth.application.usecases.role.remove_permission_from_role_usecase import (
+    RemovePermissionFromRoleUseCase,
+)
 
 from app.modules.auth.presentation.dependencies.permissions import require_permission
-from app.modules.auth.presentation.schemas.role.add_permission_role_request import AddPermissionToRoleRequest
-from app.modules.auth.presentation.schemas.role.create_role_request import CreateRoleRequest
-from app.modules.auth.presentation.schemas.role.update_role_request import UpdateRoleRequest
+from app.modules.auth.presentation.schemas.role.add_permission_role_request import (
+    AddPermissionToRoleRequest,
+)
+from app.modules.auth.presentation.schemas.role.create_role_request import (
+    CreateRoleRequest,
+)
+from app.modules.auth.presentation.schemas.role.update_role_request import (
+    UpdateRoleRequest,
+)
 from app.modules.auth.presentation.utils.response_util import ResponseUtil
 
 from ..dependencies.role import (
@@ -33,6 +58,7 @@ router = APIRouter(prefix="/roles", tags=["Roles"])
 # ============================================================================
 # CRUD
 # ============================================================================
+
 
 @router.post(
     "/",
@@ -118,6 +144,7 @@ async def delete_role(
 # PERMISSIONS
 # ============================================================================
 
+
 @router.post(
     "/{role_id}/permissions",
     status_code=status.HTTP_200_OK,
@@ -143,7 +170,9 @@ async def add_permission_to_role(
 async def remove_permission_from_role(
     role_id: UUID,
     permission_id: UUID,
-    usecase: RemovePermissionFromRoleUseCase = Depends(get_remove_permission_from_role_usecase),
+    usecase: RemovePermissionFromRoleUseCase = Depends(
+        get_remove_permission_from_role_usecase
+    ),
 ):
     dto = RemovePermissionFromRoleDTO(role_id=role_id, permission_id=permission_id)
     await usecase.execute(dto)

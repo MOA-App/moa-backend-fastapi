@@ -2,7 +2,10 @@ from ..dtos.create_product_dto import UpdateProductDTO
 from ..dtos.product_response_dto import ProductResponseDTO
 from ...domain.repositories.product_repository import ProductRepositoryInterface
 from ...domain.repositories.category_repository import CategoryRepositoryInterface
-from ...domain.exceptions.product_exceptions import ProductNotFoundException, ProductAlreadyExistsException
+from ...domain.exceptions.product_exceptions import (
+    ProductNotFoundException,
+    ProductAlreadyExistsException,
+)
 from ...domain.exceptions.category_exceptions import CategoryNotFoundException
 
 
@@ -12,12 +15,14 @@ class UpdateProductUseCase:
     def __init__(
         self,
         product_repository: ProductRepositoryInterface,
-        category_repository: CategoryRepositoryInterface
+        category_repository: CategoryRepositoryInterface,
     ):
         self.product_repository = product_repository
         self.category_repository = category_repository
 
-    async def execute(self, product_id: str, data: UpdateProductDTO) -> ProductResponseDTO:
+    async def execute(
+        self, product_id: str, data: UpdateProductDTO
+    ) -> ProductResponseDTO:
         """
         Atualiza um produto existente.
 
@@ -76,4 +81,3 @@ class UpdateProductUseCase:
         updated = await self.product_repository.update(product)
 
         return ProductResponseDTO.model_validate(updated)
-

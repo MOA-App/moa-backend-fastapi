@@ -1,10 +1,13 @@
 import pytest
-from app.modules.auth.domain.value_objects.permission_vo.permission_name_vo import PermissionName
-from app.modules.auth.domain.exceptions.auth_exceptions import InvalidPermissionFormatException
+from app.modules.auth.domain.value_objects.permission_vo.permission_name_vo import (
+    PermissionName,
+)
+from app.modules.auth.domain.exceptions.auth_exceptions import (
+    InvalidPermissionFormatException,
+)
 
 
 class TestPermissionName:
-
     # -------- Criação válida --------
 
     def test_create_simple_permission(self):
@@ -51,7 +54,10 @@ class TestPermissionName:
         assert pn.action == "delete"
 
     def test_resource_returns_permission_resource_vo(self):
-        from app.modules.auth.domain.value_objects.permission_vo.permission_resource_vo import PermissionResource
+        from app.modules.auth.domain.value_objects.permission_vo.permission_resource_vo import (
+            PermissionResource,
+        )
+
         pn = PermissionName("users.create")
         assert isinstance(pn.resource, PermissionResource)
         assert pn.resource.value == "users"

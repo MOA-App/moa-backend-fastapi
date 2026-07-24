@@ -103,12 +103,7 @@ class RoleModel(Base, TimestampMixin):
     # ========================================================================
 
     def __repr__(self) -> str:
-        return (
-            f"<RoleModel("
-            f"id={self.id}, "
-            f"nome='{self.nome}'"
-            f")>"
-        )
+        return f"<RoleModel(id={self.id}, nome='{self.nome}')>"
 
     def __str__(self) -> str:
         return f"Role: {self.nome}"

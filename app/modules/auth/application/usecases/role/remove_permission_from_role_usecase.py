@@ -1,4 +1,6 @@
-from app.modules.auth.application.dtos.role.role_inputs import RemovePermissionFromRoleDTO
+from app.modules.auth.application.dtos.role.role_inputs import (
+    RemovePermissionFromRoleDTO,
+)
 from app.modules.auth.domain.repositories.role_repository import RoleRepository
 from app.shared.domain.value_objects.id_vo import EntityId
 
@@ -27,4 +29,6 @@ class RemovePermissionFromRoleUseCase:
         role_id = EntityId(dto.role_id)
         permission_id = EntityId(dto.permission_id)
 
-        return await self._role_repository.remove_permission_from_role(role_id, permission_id)
+        return await self._role_repository.remove_permission_from_role(
+            role_id, permission_id
+        )

@@ -20,7 +20,7 @@ class CreateCategoryUseCase:
         entity = CategoryEntity(
             id=None,  # Será gerado automaticamente
             name=data.name,
-            description=data.description
+            description=data.description,
         )
 
         # Salvar no repositório

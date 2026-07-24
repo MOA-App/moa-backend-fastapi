@@ -8,6 +8,7 @@ import uuid
 @dataclass
 class ProductEntity:
     """Entidade de domínio para Produto"""
+
     id: str
     name: str
     price: Decimal
@@ -47,4 +48,3 @@ class ProductEntity:
     def is_in_stock(self) -> bool:
         """Verifica se o produto está em estoque"""
         return self.stock_quantity > 0 and self.is_active
-

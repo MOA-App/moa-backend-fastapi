@@ -1,8 +1,12 @@
 import pytest
 from datetime import datetime, timezone
 from app.modules.auth.domain.entities.permission_entity import Permission
-from app.modules.auth.domain.value_objects.permission_vo.permission_name_vo import PermissionName
-from app.modules.auth.domain.value_objects.permission_vo.permission_resource_vo import PermissionResource
+from app.modules.auth.domain.value_objects.permission_vo.permission_name_vo import (
+    PermissionName,
+)
+from app.modules.auth.domain.value_objects.permission_vo.permission_resource_vo import (
+    PermissionResource,
+)
 from app.shared.domain.value_objects.id_vo import EntityId
 
 
@@ -19,8 +23,8 @@ def make_permission(nome="users.create", descricao=None, with_id=None):
         descricao=descricao,
     )
 
-class TestPermissionCreate:
 
+class TestPermissionCreate:
     def test_create_generates_id(self):
         p = make_permission()
         assert p.id is not None
@@ -49,7 +53,6 @@ class TestPermissionCreate:
 
 
 class TestPermissionReconstruct:
-
     def test_reconstruct_preserves_id(self):
         entity_id = EntityId.generate()
         p = Permission.reconstruct(
@@ -75,7 +78,6 @@ class TestPermissionReconstruct:
 
 
 class TestPermissionUpdateDescription:
-
     def test_returns_new_instance(self):
         p = make_permission()
         p2 = p.update_description("Nova descrição")
@@ -98,7 +100,6 @@ class TestPermissionUpdateDescription:
 
 
 class TestPermissionBehavior:
-
     def test_is_for_resource_true(self):
         p = make_permission("users.create")
         assert p.is_for_resource(PermissionResource("users")) is True
@@ -133,7 +134,6 @@ class TestPermissionBehavior:
 
 
 class TestPermissionMatches:
-
     def test_exact_match(self):
         p = make_permission("users.create")
         assert p.matches("users.create") is True
@@ -168,7 +168,6 @@ class TestPermissionMatches:
 
 
 class TestPermissionIdentity:
-
     def test_same_id_equal(self):
         entity_id = EntityId.generate()
         p1 = Permission.reconstruct(
@@ -210,12 +209,16 @@ class TestPermissionIdentity:
         entity_id = EntityId.generate()
         dt = datetime.now(timezone.utc)
         p1 = Permission.reconstruct(
-            id=entity_id, nome=PermissionName("users.read"),
-            descricao=None, data_criacao=dt,
+            id=entity_id,
+            nome=PermissionName("users.read"),
+            descricao=None,
+            data_criacao=dt,
         )
         p2 = Permission.reconstruct(
-            id=entity_id, nome=PermissionName("users.read"),
-            descricao=None, data_criacao=dt,
+            id=entity_id,
+            nome=PermissionName("users.read"),
+            descricao=None,
+            data_criacao=dt,
         )
         assert len({p1, p2}) == 1
 

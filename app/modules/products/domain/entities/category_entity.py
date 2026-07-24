@@ -7,6 +7,7 @@ import uuid
 @dataclass
 class CategoryEntity:
     """Entidade de domínio para Categoria"""
+
     id: str
     name: str
     description: Optional[str] = None
@@ -20,4 +21,3 @@ class CategoryEntity:
             self.created_at = datetime.utcnow()
         if not self.updated_at:
             self.updated_at = datetime.utcnow()
-

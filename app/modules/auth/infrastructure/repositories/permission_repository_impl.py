@@ -2,7 +2,9 @@ from typing import Optional, List
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, exists, func
 
-from app.modules.auth.infrastructure.exceptions.repository_exception import RepositoryException
+from app.modules.auth.infrastructure.exceptions.repository_exception import (
+    RepositoryException,
+)
 from app.modules.auth.infrastructure.models.permission_model import PermissionModel
 
 from ...domain.repositories.permission_repository import PermissionRepository
@@ -23,27 +25,27 @@ logger = logging.getLogger(__name__)
 class PermissionRepositoryImpl(PermissionRepository):
     """
     Implementação do PermissionRepository usando SQLAlchemy.
-    
+
     Responsável por:
     - Persistir e recuperar Permission entities
     - Operações de busca e listagem
     - Consultas agregadas (recursos, ações)
     """
-    
+
     def __init__(self, session: AsyncSession):
         self.session = session
         self.mapper = PermissionMapper()
-    
+
     async def create(self, permission: Permission) -> Permission:
         """
         Cria nova permissão no banco.
-        
+
         Args:
             permission: Entity Permission
-            
+
         Returns:
             Permission: Permissão criada
-            
+
         Raises:
             RepositoryException: Erro ao persistir
         """
@@ -52,24 +54,21 @@ class PermissionRepositoryImpl(PermissionRepository):
             self.session.add(model)
             await self.session.flush()
             await self.session.refresh(model)
-            
+
             logger.info(f"Permission created: {model.nome}")
-            
+
             return self.mapper.to_entity(model)
-            
+
         except Exception as e:
-            raise RepositoryException(
-                operation="criar permissão",
-                details=str(e)
-            )
-    
+            raise RepositoryException(operation="criar permissão", details=str(e))
+
     async def find_by_id(self, permission_id: EntityId) -> Optional[Permission]:
         """
         Busca permissão por ID.
-        
+
         Args:
             permission_id: ID da permissão
-            
+
         Returns:
             Optional[Permission]: Permissão encontrada ou None
         """
@@ -77,144 +76,135 @@ class PermissionRepositoryImpl(PermissionRepository):
             stmt = select(PermissionModel).where(
                 PermissionModel.id == permission_id.value
             )
-            
+
             result = await self.session.execute(stmt)
             model = result.scalar_one_or_none()
-            
+
             if model:
                 logger.debug(f"Permission found by id: {permission_id}")
-            
+
             return self.mapper.to_entity(model) if model else None
-            
+
         except Exception as e:
             logger.error(f"Error finding permission by id: {e}")
             raise RepositoryException(
-                operation="buscar permissão por ID",
-                details=str(e)
+                operation="buscar permissão por ID", details=str(e)
             )
-    
+
     async def find_by_name(self, name: PermissionName) -> Optional[Permission]:
         """
         Busca permissão por nome.
-        
+
         Args:
             name: Nome da permissão (VO)
-            
+
         Returns:
             Optional[Permission]: Permissão encontrada ou None
         """
         try:
-            stmt = select(PermissionModel).where(
-                PermissionModel.nome == name.value
-            )
-            
+            stmt = select(PermissionModel).where(PermissionModel.nome == name.value)
+
             result = await self.session.execute(stmt)
             model = result.scalar_one_or_none()
-            
+
             if model:
                 logger.debug(f"Permission found by name: {name.value}")
-            
+
             return self.mapper.to_entity(model) if model else None
-            
+
         except Exception as e:
             logger.error(f"Error finding permission by name: {e}")
             raise RepositoryException(
-                operation="buscar permissão por nome",
-                details=str(e)
+                operation="buscar permissão por nome", details=str(e)
             )
-    
+
     async def exists_by_name(self, name: PermissionName) -> bool:
         """
         Verifica se existe permissão com o nome.
-        
+
         Args:
             name: Nome da permissão
-            
+
         Returns:
             bool: True se existe
         """
         try:
-            stmt = select(
-                exists().where(PermissionModel.nome == name.value)
-            )
+            stmt = select(exists().where(PermissionModel.nome == name.value))
             result = await self.session.execute(stmt)
             return result.scalar()
-            
+
         except Exception as e:
             logger.error(f"Error checking permission existence: {e}")
             raise RepositoryException(
-                operation="verificar existência de permissão",
-                details=str(e)
+                operation="verificar existência de permissão", details=str(e)
             )
-    
+
     async def list_all(self) -> List[Permission]:
         """
         Lista todas as permissões.
-        
+
         Returns:
             List[Permission]: Lista de permissões ordenadas por nome
         """
         try:
             stmt = select(PermissionModel).order_by(PermissionModel.nome)
-            
+
             result = await self.session.execute(stmt)
             models = result.scalars().all()
-            
+
             logger.debug(f"Listed {len(models)} permissions")
-            
+
             return [self.mapper.to_entity(model) for model in models]
-            
+
         except Exception as e:
             logger.error(f"Error listing permissions: {e}")
-            raise RepositoryException(
-                operation="listar permissões",
-                details=str(e)
-            )
-    
+            raise RepositoryException(operation="listar permissões", details=str(e))
+
     async def list_by_resource(self, resource: str) -> List[Permission]:
         """
         Lista permissões de um recurso específico.
-        
+
         Busca permissões que começam com "resource."
-        
+
         Args:
             resource: Nome do recurso (ex: "users")
-            
+
         Returns:
             List[Permission]: Permissões do recurso
         """
         try:
             resource_lower = resource.lower()
-            
+
             # Buscar permissões que começam com "resource."
-            stmt = select(PermissionModel).where(
-                PermissionModel.nome.like(f"{resource_lower}.%")
-            ).order_by(PermissionModel.nome)
-            
+            stmt = (
+                select(PermissionModel)
+                .where(PermissionModel.nome.like(f"{resource_lower}.%"))
+                .order_by(PermissionModel.nome)
+            )
+
             result = await self.session.execute(stmt)
             models = result.scalars().all()
-            
+
             logger.debug(f"Found {len(models)} permissions for resource: {resource}")
-            
+
             return [self.mapper.to_entity(model) for model in models]
-            
+
         except Exception as e:
             logger.error(f"Error listing permissions by resource: {e}")
             raise RepositoryException(
-                operation="listar permissões por recurso",
-                details=str(e)
+                operation="listar permissões por recurso", details=str(e)
             )
-    
+
     async def update(self, permission: Permission) -> Permission:
         """
         Atualiza permissão existente.
-        
+
         Args:
             permission: Entity com dados atualizados
-            
+
         Returns:
             Permission: Permissão atualizada
-            
+
         Raises:
             PermissionNotFoundException: Permissão não encontrada
         """
@@ -222,39 +212,36 @@ class PermissionRepositoryImpl(PermissionRepository):
             stmt = select(PermissionModel).where(
                 PermissionModel.id == permission.id.value
             )
-            
+
             result = await self.session.execute(stmt)
             model = result.scalar_one_or_none()
-            
+
             if not model:
                 raise PermissionNotFoundException(str(permission.id.value))
-            
+
             # Atualizar model com dados da entity
             self.mapper.update_model_from_entity(model, permission)
-            
+
             await self.session.flush()
             await self.session.refresh(model)
-            
+
             logger.info(f"Permission updated: {model.nome}")
-            
+
             return self.mapper.to_entity(model)
-            
+
         except PermissionNotFoundException:
             raise
         except Exception as e:
             logger.error(f"Error updating permission: {e}")
-            raise RepositoryException(
-                operation="atualizar permissão",
-                details=str(e)
-            )
-    
+            raise RepositoryException(operation="atualizar permissão", details=str(e))
+
     async def delete(self, permission_id: EntityId) -> None:
         """
         Deleta permissão.
-        
+
         Args:
             permission_id: ID da permissão
-            
+
         Raises:
             PermissionNotFoundException: Permissão não encontrada
         """
@@ -264,64 +251,62 @@ class PermissionRepositoryImpl(PermissionRepository):
             )
             result = await self.session.execute(stmt)
             model = result.scalar_one_or_none()
-            
+
             if not model:
                 raise PermissionNotFoundException(str(permission_id.value))
-            
+
             permission_name = model.nome
-            
+
             await self.session.delete(model)
             await self.session.flush()
-            
+
             logger.info(f"Permission deleted: {permission_name}")
-            
+
         except PermissionNotFoundException:
             raise
         except Exception as e:
             logger.error(f"Error deleting permission: {e}")
-            raise RepositoryException(
-                operation="deletar permissão",
-                details=str(e)
-            )
-    
+            raise RepositoryException(operation="deletar permissão", details=str(e))
+
     async def find_by_names(self, names: List[PermissionName]) -> List[Permission]:
         """
         Busca múltiplas permissões por nome (bulk).
-        
+
         Args:
             names: Lista de nomes de permissões
-            
+
         Returns:
             List[Permission]: Permissões encontradas
         """
         try:
             if not names:
                 return []
-            
+
             name_values = [name.value for name in names]
-            
-            stmt = select(PermissionModel).where(
-                PermissionModel.nome.in_(name_values)
-            ).order_by(PermissionModel.nome)
-            
+
+            stmt = (
+                select(PermissionModel)
+                .where(PermissionModel.nome.in_(name_values))
+                .order_by(PermissionModel.nome)
+            )
+
             result = await self.session.execute(stmt)
             models = result.scalars().all()
-            
+
             logger.debug(f"Found {len(models)} permissions from {len(names)} names")
-            
+
             return [self.mapper.to_entity(model) for model in models]
-            
+
         except Exception as e:
             logger.error(f"Error finding permissions by names: {e}")
             raise RepositoryException(
-                operation="buscar permissões por nomes",
-                details=str(e)
+                operation="buscar permissões por nomes", details=str(e)
             )
-    
+
     async def count(self) -> int:
         """
         Conta total de permissões.
-        
+
         Returns:
             int: Quantidade total
         """
@@ -329,71 +314,66 @@ class PermissionRepositoryImpl(PermissionRepository):
             stmt = select(func.count()).select_from(PermissionModel)
             result = await self.session.execute(stmt)
             return result.scalar()
-            
+
         except Exception as e:
             logger.error(f"Error counting permissions: {e}")
-            raise RepositoryException(
-                operation="contar permissões",
-                details=str(e)
-            )
-    
+            raise RepositoryException(operation="contar permissões", details=str(e))
+
     async def count_by_resource(self, resource: str) -> int:
         """
         Conta permissões de um recurso.
-        
+
         Args:
             resource: Nome do recurso
-            
+
         Returns:
             int: Quantidade de permissões do recurso
         """
         try:
             resource_lower = resource.lower()
-            
-            stmt = select(func.count()).select_from(PermissionModel).where(
-                PermissionModel.nome.like(f"{resource_lower}.%")
+
+            stmt = (
+                select(func.count())
+                .select_from(PermissionModel)
+                .where(PermissionModel.nome.like(f"{resource_lower}.%"))
             )
-            
+
             result = await self.session.execute(stmt)
             return result.scalar()
-            
+
         except Exception as e:
             logger.error(f"Error counting permissions by resource: {e}")
             raise RepositoryException(
-                operation="contar permissões por recurso",
-                details=str(e)
+                operation="contar permissões por recurso", details=str(e)
             )
-    
+
     async def list_resources(self) -> List[str]:
         """
         Lista todos os recursos únicos que possuem permissões.
-        
+
         Extrai a primeira parte de cada permissão (antes do primeiro ponto).
-        
+
         Returns:
             List[str]: Lista de recursos únicos ordenados
-            
+
         Example:
             permissions: users.create, users.read, posts.create
             result: ['posts', 'users']
         """
         try:
             # Buscar todos os nomes de permissões
-            stmt = select(func.split_part(PermissionModel.nome, '.', 1).distinct())
+            stmt = select(func.split_part(PermissionModel.nome, ".", 1).distinct())
             result = await self.session.execute(stmt)
             return sorted(result.scalars().all())
-            
+
         except Exception as e:
             logger.error(f"Error listing resources: {e}")
-            raise RepositoryException(
-                operation="listar recursos",
-                details=str(e)
-            )
-    
+            raise RepositoryException(operation="listar recursos", details=str(e))
+
     async def list_actions(self, resource: str) -> List[str]:
         """
         Lista todas as ações disponíveis para um recurso.
-        
+
         Exemplo:
             resource: "users"
             permissions: users.create, users.read
@@ -402,10 +382,9 @@ class PermissionRepositoryImpl(PermissionRepository):
         try:
             resource_lower = resource.lower()
 
-            stmt = (
-                select(func.distinct(func.split_part(PermissionModel.nome, ".", -1)))
-                .where(PermissionModel.nome.like(f"{resource_lower}.%"))
-            )
+            stmt = select(
+                func.distinct(func.split_part(PermissionModel.nome, ".", -1))
+            ).where(PermissionModel.nome.like(f"{resource_lower}.%"))
 
             result = await self.session.execute(stmt)
             actions = sorted(result.scalars().all())

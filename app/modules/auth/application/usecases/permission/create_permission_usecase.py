@@ -1,5 +1,9 @@
-from app.modules.auth.application.dtos.permission.permission_inputs import CreatePermissionDTO
-from app.modules.auth.application.dtos.permission.permission_outputs import PermissionResponseDTO
+from app.modules.auth.application.dtos.permission.permission_inputs import (
+    CreatePermissionDTO,
+)
+from app.modules.auth.application.dtos.permission.permission_outputs import (
+    PermissionResponseDTO,
+)
 from app.modules.auth.application.mappers.permission_mapper import PermissionMapper
 
 from ....domain.repositories.permission_repository import PermissionRepository
@@ -9,8 +13,8 @@ from ....domain.exceptions.auth_exceptions import (
     PermissionAlreadyExistsException,
 )
 
-class CreatePermissionUseCase:
 
+class CreatePermissionUseCase:
     def __init__(self, permission_repository: PermissionRepository):
         self.permission_repository = permission_repository
 
@@ -23,10 +27,7 @@ class CreatePermissionUseCase:
             raise PermissionAlreadyExistsException(permission_name.value)
 
         # 3. Criar entidade (VO, não string)
-        permission = Permission.create(
-            nome=permission_name,
-            descricao=dto.descricao
-        )
+        permission = Permission.create(nome=permission_name, descricao=dto.descricao)
 
         # 4. Persistir
         created = await self.permission_repository.create(permission)

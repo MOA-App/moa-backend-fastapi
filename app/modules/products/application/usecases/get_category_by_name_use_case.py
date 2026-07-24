@@ -1,4 +1,3 @@
-
 from ..dtos.category_dto import CategoryResponseDTO
 from ...domain.repositories.category_repository import CategoryRepositoryInterface
 from ...domain.exceptions.category_exceptions import CategoryNotFoundException
@@ -31,4 +30,3 @@ class GetCategoryByNameUseCase:
             )
 
         return CategoryResponseDTO.model_validate(category)
-

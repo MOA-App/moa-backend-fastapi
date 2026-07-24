@@ -1,9 +1,10 @@
 import pytest
-from app.modules.auth.domain.value_objects.permission_vo.permission_resource_vo import PermissionResource
+from app.modules.auth.domain.value_objects.permission_vo.permission_resource_vo import (
+    PermissionResource,
+)
 
 
 class TestPermissionResource:
-
     # -------- Criação válida --------
 
     def test_create_valid_resource(self):

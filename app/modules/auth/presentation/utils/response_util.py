@@ -10,9 +10,7 @@ class ResponseUtil:
 
     @staticmethod
     def success(
-        data: Any,
-        status_code: int = status.HTTP_200_OK,
-        message: Optional[str] = None
+        data: Any, status_code: int = status.HTTP_200_OK, message: Optional[str] = None
     ) -> JSONResponse:
 
         content = {
@@ -29,9 +27,7 @@ class ResponseUtil:
     @staticmethod
     def created(data: Any, message: str = "Recurso criado com sucesso") -> JSONResponse:
         return ResponseUtil.success(
-            data=data,
-            status_code=status.HTTP_201_CREATED,
-            message=message
+            data=data, status_code=status.HTTP_201_CREATED, message=message
         )
 
     @staticmethod
@@ -42,7 +38,7 @@ class ResponseUtil:
     def error(
         message: str,
         status_code: int = status.HTTP_500_INTERNAL_SERVER_ERROR,
-        errors: Optional[list] = None
+        errors: Optional[list] = None,
     ) -> JSONResponse:
 
         content = {

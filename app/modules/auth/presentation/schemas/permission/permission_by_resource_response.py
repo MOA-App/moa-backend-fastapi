@@ -5,16 +5,15 @@ from .permission_response import PermissionResponse
 
 class PermissionByResourceResponse(BaseModel):
     """Schema de resposta para permissões por recurso"""
-    
+
     resource: str = Field(..., description="Nome do recurso")
     permissions: List[PermissionResponse] = Field(
-        ..., 
-        description="Lista de permissões do recurso"
+        ..., description="Lista de permissões do recurso"
     )
     total: int = Field(..., description="Quantidade de permissões")
 
     model_config = ConfigDict(
-        json_schema_extra = {
+        json_schema_extra={
             "example": {
                 "resource": "users",
                 "permissions": [
@@ -24,10 +23,10 @@ class PermissionByResourceResponse(BaseModel):
                         "descricao": "Criar usuários",
                         "resource": "users",
                         "action": "create",
-                        "data_criacao": "2024-01-15T10:30:00Z"
+                        "data_criacao": "2024-01-15T10:30:00Z",
                     }
                 ],
-                "total": 4
+                "total": 4,
             }
         }
     )

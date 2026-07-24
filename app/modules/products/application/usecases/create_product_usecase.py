@@ -13,7 +13,7 @@ class CreateProductUseCase:
     def __init__(
         self,
         product_repository: ProductRepositoryInterface,
-        category_repository: CategoryRepositoryInterface
+        category_repository: CategoryRepositoryInterface,
     ):
         self.product_repository = product_repository
         self.category_repository = category_repository
@@ -55,7 +55,7 @@ class CreateProductUseCase:
             sku=data.sku,
             category_id=data.category_id,
             stock_quantity=data.stock_quantity,
-            is_active=data.is_active
+            is_active=data.is_active,
         )
 
         # Salvar no repositório
@@ -63,4 +63,3 @@ class CreateProductUseCase:
 
         # Retornar DTO
         return ProductResponseDTO.model_validate(created)
-

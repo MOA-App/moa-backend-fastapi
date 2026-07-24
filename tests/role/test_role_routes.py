@@ -25,12 +25,15 @@ ROLE_RESPONSE = {
 
 # ── fixtures ─────────────────────────────────────────────────────────────────
 
+
 @pytest.fixture
 async def client(app):
     async def fake_permission():
         return None
 
-    from app.modules.auth.presentation.dependencies.permissions import require_permission
+    from app.modules.auth.presentation.dependencies.permissions import (
+        require_permission,
+    )
     from app.modules.auth.presentation.dependencies.role import (
         get_create_role_usecase,
         get_role_by_id_usecase,
@@ -53,7 +56,6 @@ async def client(app):
     app.dependency_overrides = {
         # override de permissões (CORRETO)
         require_permission: lambda *args, **kwargs: fake_permission,
-
         # override dos usecases
         get_create_role_usecase: lambda: create_uc,
         get_role_by_id_usecase: lambda: get_uc,
@@ -82,8 +84,8 @@ async def client(app):
 
 # ── POST /roles ───────────────────────────────────────────────────────────────
 
-class TestCreateRole:
 
+class TestCreateRole:
     async def test_creates_role_returns_201(self, client):
         client.create_uc.execute.return_value = ROLE_RESPONSE
 
@@ -93,7 +95,9 @@ class TestCreateRole:
         assert response.json()["success"] is True
 
     async def test_returns_409_when_already_exists(self, client):
-        client.create_uc.execute.side_effect = RoleAlreadyExistsException("Role já existe")
+        client.create_uc.execute.side_effect = RoleAlreadyExistsException(
+            "Role já existe"
+        )
 
         response = await client.post("/roles/", json={"nome": "admin"})
 
@@ -111,8 +115,8 @@ class TestCreateRole:
 
 # ── GET /roles ────────────────────────────────────────────────────────────────
 
-class TestListRoles:
 
+class TestListRoles:
     async def test_lists_roles_returns_200(self, client):
         client.list_uc.execute.return_value = {"roles": [ROLE_RESPONSE], "total": 1}
 
@@ -131,8 +135,8 @@ class TestListRoles:
 
 # ── GET /roles/{id} ───────────────────────────────────────────────────────────
 
-class TestGetRole:
 
+class TestGetRole:
     async def test_returns_role_when_found(self, client):
         client.get_uc.execute.return_value = ROLE_RESPONSE
 
@@ -157,8 +161,8 @@ class TestGetRole:
 
 # ── PUT /roles/{id} ───────────────────────────────────────────────────────────
 
-class TestUpdateRole:
 
+class TestUpdateRole:
     async def test_updates_role_returns_200(self, client):
         client.update_uc.execute.return_value = {**ROLE_RESPONSE, "nome": "super_admin"}
 
@@ -167,14 +171,18 @@ class TestUpdateRole:
         assert response.status_code == 200
 
     async def test_returns_404_when_not_found(self, client):
-        client.update_uc.execute.side_effect = RoleNotFoundException("Role não encontrada")
+        client.update_uc.execute.side_effect = RoleNotFoundException(
+            "Role não encontrada"
+        )
 
         response = await client.put(f"/roles/{ROLE_ID}", json={"nome": "new_name"})
 
         assert response.status_code == 404
 
     async def test_returns_409_when_name_conflict(self, client):
-        client.update_uc.execute.side_effect = RoleAlreadyExistsException("Nome já existe")
+        client.update_uc.execute.side_effect = RoleAlreadyExistsException(
+            "Nome já existe"
+        )
 
         response = await client.put(f"/roles/{ROLE_ID}", json={"nome": "admin"})
 
@@ -183,8 +191,8 @@ class TestUpdateRole:
 
 # ── DELETE /roles/{id} ────────────────────────────────────────────────────────
 
-class TestDeleteRole:
 
+class TestDeleteRole:
     async def test_deletes_role_returns_204(self, client):
         client.delete_uc.execute.return_value = None
 
@@ -193,7 +201,9 @@ class TestDeleteRole:
         assert response.status_code == 204
 
     async def test_returns_404_when_not_found(self, client):
-        client.delete_uc.execute.side_effect = RoleNotFoundException("Role não encontrada")
+        client.delete_uc.execute.side_effect = RoleNotFoundException(
+            "Role não encontrada"
+        )
 
         response = await client.delete(f"/roles/{ROLE_ID}")
 
@@ -202,8 +212,8 @@ class TestDeleteRole:
 
 # ── POST /roles/{id}/permissions ─────────────────────────────────────────────
 
-class TestAddPermissionToRole:
 
+class TestAddPermissionToRole:
     async def test_adds_permission_returns_200(self, client):
         client.add_perm_uc.execute.return_value = True
 
@@ -215,7 +225,9 @@ class TestAddPermissionToRole:
         assert response.status_code == 200
 
     async def test_returns_409_when_already_assigned(self, client):
-        client.add_perm_uc.execute.side_effect = RoleAlreadyAssignedException("Já associada")
+        client.add_perm_uc.execute.side_effect = RoleAlreadyAssignedException(
+            "Já associada"
+        )
 
         response = await client.post(
             f"/roles/{ROLE_ID}/permissions",
@@ -225,7 +237,9 @@ class TestAddPermissionToRole:
         assert response.status_code == 409
 
     async def test_returns_404_when_role_not_found(self, client):
-        client.add_perm_uc.execute.side_effect = RoleNotFoundException("Role não encontrada")
+        client.add_perm_uc.execute.side_effect = RoleNotFoundException(
+            "Role não encontrada"
+        )
 
         response = await client.post(
             f"/roles/{ROLE_ID}/permissions",
@@ -237,8 +251,8 @@ class TestAddPermissionToRole:
 
 # ── DELETE /roles/{id}/permissions/{perm_id} ─────────────────────────────────
 
-class TestRemovePermissionFromRole:
 
+class TestRemovePermissionFromRole:
     async def test_removes_permission_returns_204(self, client):
         client.remove_perm_uc.execute.return_value = True
 
@@ -247,14 +261,18 @@ class TestRemovePermissionFromRole:
         assert response.status_code == 204
 
     async def test_returns_400_when_not_assigned(self, client):
-        client.remove_perm_uc.execute.side_effect = RoleNotAssignedException("Permissão não associada")
+        client.remove_perm_uc.execute.side_effect = RoleNotAssignedException(
+            "Permissão não associada"
+        )
 
         response = await client.delete(f"/roles/{ROLE_ID}/permissions/{PERMISSION_ID}")
 
         assert response.status_code == 400
 
     async def test_returns_404_when_role_not_found(self, client):
-        client.remove_perm_uc.execute.side_effect = RoleNotFoundException("Role não encontrada")
+        client.remove_perm_uc.execute.side_effect = RoleNotFoundException(
+            "Role não encontrada"
+        )
 
         response = await client.delete(f"/roles/{ROLE_ID}/permissions/{PERMISSION_ID}")
 

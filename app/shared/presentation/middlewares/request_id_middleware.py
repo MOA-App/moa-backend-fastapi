@@ -4,7 +4,6 @@ import uuid
 
 
 class RequestIdMiddleware(BaseHTTPMiddleware):
-
     async def dispatch(self, request: Request, call_next):
         request_id = request.headers.get("X-Request-ID")
 

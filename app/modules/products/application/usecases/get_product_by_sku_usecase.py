@@ -25,9 +25,6 @@ class GetProductBySkuUseCase:
         product = await self.repository.get_by_sku(sku)
 
         if not product:
-            raise ProductNotFoundException(
-                f"Produto com SKU '{sku}' não encontrado"
-            )
+            raise ProductNotFoundException(f"Produto com SKU '{sku}' não encontrado")
 
         return ProductResponseDTO.model_validate(product)
-

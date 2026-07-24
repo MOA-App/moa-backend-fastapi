@@ -12,7 +12,7 @@ class PermissionSummaryResponse(BaseModel):
     descricao: Optional[str] = Field(None, description="Descrição da permissão")
 
     model_config = ConfigDict(
-        json_schema_extra = {
+        json_schema_extra={
             "example": {
                 "id": "550e8400-e29b-41d4-a716-446655440000",
                 "nome": "users.create",
@@ -20,6 +20,7 @@ class PermissionSummaryResponse(BaseModel):
             }
         }
     )
+
 
 class RoleResponse(BaseModel):
     """Schema de resposta completo de uma role."""
@@ -35,7 +36,7 @@ class RoleResponse(BaseModel):
     )
 
     model_config = ConfigDict(
-        json_schema_extra = {
+        json_schema_extra={
             "example": {
                 "id": "550e8400-e29b-41d4-a716-446655440001",
                 "nome": "admin",

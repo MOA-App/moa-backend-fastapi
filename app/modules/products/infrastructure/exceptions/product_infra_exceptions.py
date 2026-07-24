@@ -13,6 +13,7 @@ não precise conhecer detalhes do SQLAlchemy.
 
 class ProductInfrastructureException(Exception):
     """Exceção base para erros de infraestrutura do módulo Product"""
+
     pass
 
 

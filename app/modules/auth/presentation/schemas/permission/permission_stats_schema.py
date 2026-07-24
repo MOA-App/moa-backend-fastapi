@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from typing import List
 
+
 class PermissionStats(BaseModel):
     total_permissions: int
     total_resources: int

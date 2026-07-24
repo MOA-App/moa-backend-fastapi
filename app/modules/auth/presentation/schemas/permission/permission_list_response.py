@@ -1,12 +1,14 @@
 from typing import List
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.modules.auth.application.dtos.permission.permission_outputs import PermissionSummaryDTO
+from app.modules.auth.application.dtos.permission.permission_outputs import (
+    PermissionSummaryDTO,
+)
 
 
 class PermissionListMeta(BaseModel):
     """Metadados de paginação"""
-    
+
     total: int = Field(..., description="Total de registros")
     page: int = Field(..., description="Página atual")
     limit: int = Field(..., description="Itens por página")
@@ -15,12 +17,12 @@ class PermissionListMeta(BaseModel):
 
 class PermissionListResponse(BaseModel):
     """Schema de resposta para listagem de permissões"""
-    
+
     data: List[PermissionSummaryDTO] = Field(..., description="Lista de permissões")
     meta: PermissionListMeta = Field(..., description="Metadados de paginação")
 
     model_config = ConfigDict(
-        json_schema_extra = {
+        json_schema_extra={
             "example": {
                 "data": [
                     {
@@ -29,15 +31,10 @@ class PermissionListResponse(BaseModel):
                         "descricao": "Criar usuários",
                         "resource": "users",
                         "action": "create",
-                        "data_criacao": "2024-01-15T10:30:00Z"
+                        "data_criacao": "2024-01-15T10:30:00Z",
                     }
                 ],
-                "meta": {
-                    "total": 50,
-                    "page": 1,
-                    "limit": 10,
-                    "total_pages": 5
-                }
+                "meta": {"total": 50, "page": 1, "limit": 10, "total_pages": 5},
             }
         }
     )

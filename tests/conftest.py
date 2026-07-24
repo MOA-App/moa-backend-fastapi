@@ -8,6 +8,7 @@ from app.main import app as fastapi_app
 # APP FIXTURE
 # ============================
 
+
 @pytest.fixture
 def app():
     return fastapi_app
@@ -16,6 +17,7 @@ def app():
 # ============================
 # PERMISSION REPOSITORY
 # ============================
+
 
 @pytest.fixture
 def mock_permission_repository():
@@ -35,6 +37,7 @@ def mock_permission_repository():
 # ============================
 # ROLE REPOSITORY
 # ============================
+
 
 @pytest.fixture
 def mock_role_repository():

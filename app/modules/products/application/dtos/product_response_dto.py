@@ -6,6 +6,7 @@ from datetime import datetime
 
 class ProductResponseDTO(BaseModel):
     """DTO de resposta de produto"""
+
     model_config = ConfigDict(from_attributes=True)
 
     id: str
@@ -22,6 +23,7 @@ class ProductResponseDTO(BaseModel):
 
 class ProductWithCategoryResponseDTO(BaseModel):
     """DTO de resposta de produto com dados da categoria"""
+
     model_config = ConfigDict(from_attributes=True)
 
     id: str
@@ -35,4 +37,3 @@ class ProductWithCategoryResponseDTO(BaseModel):
     is_active: bool
     created_at: datetime
     updated_at: datetime
-

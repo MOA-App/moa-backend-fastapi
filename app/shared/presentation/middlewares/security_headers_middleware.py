@@ -5,7 +5,6 @@ from app.core.config import settings
 
 
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
-
     async def dispatch(self, request: Request, call_next):
         response = await call_next(request)
 
@@ -17,8 +16,6 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
                 "max-age=31536000; includeSubDomains"
             )
 
-            response.headers["Content-Security-Policy"] = (
-                "default-src 'self'"
-            )
+            response.headers["Content-Security-Policy"] = "default-src 'self'"
 
         return response

@@ -25,9 +25,5 @@ class UpdateRoleRequest(BaseModel):
 
     model_config = {
         "str_strip_whitespace": True,
-        "json_schema_extra": {
-            "example": {
-                "nome": "admin"
-            }
-        }
+        "json_schema_extra": {"example": {"nome": "admin"}},
     }

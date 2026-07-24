@@ -18,7 +18,9 @@ from app.modules.auth.domain.exceptions.auth_exceptions import (
     RoleAlreadyAssignedException,
     RoleNotAssignedException,
 )
-from app.modules.auth.infrastructure.exceptions.repository_exception import RepositoryException
+from app.modules.auth.infrastructure.exceptions.repository_exception import (
+    RepositoryException,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -45,6 +47,7 @@ def _base_error_response(
 # VALIDATION ERRORS (FastAPI / Pydantic)
 # ============================================================================
 
+
 async def validation_exception_handler(
     _request: Request,
     exc: Union[RequestValidationError, ValidationError],
@@ -69,6 +72,7 @@ async def validation_exception_handler(
 # DOMAIN ERRORS → HTTP
 # ============================================================================
 
+
 async def domain_exception_handler(
     _request: Request,
     exc: Exception,
@@ -86,11 +90,14 @@ async def domain_exception_handler(
         )
 
     # -------- CONFLICT (409)
-    if isinstance(exc, (
-        PermissionAlreadyExistsException,
-        RoleAlreadyExistsException,
-        RoleAlreadyAssignedException,
-    )):
+    if isinstance(
+        exc,
+        (
+            PermissionAlreadyExistsException,
+            RoleAlreadyExistsException,
+            RoleAlreadyAssignedException,
+        ),
+    ):
         return _base_error_response(
             status_code=status.HTTP_409_CONFLICT,
             message=str(exc),

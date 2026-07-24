@@ -30,4 +30,3 @@ class DeleteProductUseCase:
 
         # Excluir produto
         return await self.repository.delete(product_id)
-

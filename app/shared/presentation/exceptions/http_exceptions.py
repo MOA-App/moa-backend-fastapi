@@ -26,14 +26,18 @@ def register_exception_handlers(app):
         )
 
     @app.exception_handler(RoleAlreadyAssignedException)
-    async def role_assigned_handler(request: Request, exc: RoleAlreadyAssignedException):
+    async def role_assigned_handler(
+        request: Request, exc: RoleAlreadyAssignedException
+    ):
         return JSONResponse(
             status_code=409,
             content={"success": False, "message": str(exc)},
         )
 
     @app.exception_handler(RoleNotAssignedException)
-    async def role_not_assigned_handler(request: Request, exc: RoleNotAssignedException):
+    async def role_not_assigned_handler(
+        request: Request, exc: RoleNotAssignedException
+    ):
         return JSONResponse(
             status_code=400,
             content={"success": False, "message": str(exc)},

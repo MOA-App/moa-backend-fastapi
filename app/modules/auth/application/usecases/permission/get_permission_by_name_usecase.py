@@ -1,9 +1,20 @@
-from app.modules.auth.application.dtos.permission.permission_outputs import PermissionResponseDTO
+from app.modules.auth.application.dtos.permission.permission_outputs import (
+    PermissionResponseDTO,
+)
 from app.modules.auth.application.mappers.permission_mapper import PermissionMapper
-from app.modules.auth.domain.exceptions.auth_exceptions import InvalidPermissionFormatException, PermissionNotFoundException
-from app.modules.auth.domain.repositories.permission_repository import PermissionRepository
-from app.modules.auth.domain.value_objects.permission_vo.permission_name_vo import PermissionName
-from app.modules.auth.infrastructure.exceptions.repository_exception import RepositoryException
+from app.modules.auth.domain.exceptions.auth_exceptions import (
+    InvalidPermissionFormatException,
+    PermissionNotFoundException,
+)
+from app.modules.auth.domain.repositories.permission_repository import (
+    PermissionRepository,
+)
+from app.modules.auth.domain.value_objects.permission_vo.permission_name_vo import (
+    PermissionName,
+)
+from app.modules.auth.infrastructure.exceptions.repository_exception import (
+    RepositoryException,
+)
 
 
 class GetPermissionByNameUseCase:
@@ -46,6 +57,5 @@ class GetPermissionByNameUseCase:
             raise
         except Exception as e:
             raise RepositoryException(
-                operation="buscar permissão por nome",
-                details=str(e)
+                operation="buscar permissão por nome", details=str(e)
             )

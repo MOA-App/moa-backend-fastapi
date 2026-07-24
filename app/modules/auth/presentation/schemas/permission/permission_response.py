@@ -24,7 +24,7 @@ class PermissionResponse(BaseModel):
                 "descricao": "Permite criar novos usuários",
                 "resource": "users",
                 "action": "create",
-                "data_criacao": "2024-01-15T10:30:00Z"
+                "data_criacao": "2024-01-15T10:30:00Z",
             }
-        }
+        },
     }

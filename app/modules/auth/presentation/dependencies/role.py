@@ -1,16 +1,32 @@
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.modules.auth.application.usecases.role.add_permission_to_role_usecase import AddPermissionToRoleUseCase
-from app.modules.auth.application.usecases.role.get_role_by_id_usecase import GetRoleByIdUseCase
-from app.modules.auth.application.usecases.role.create_role_usecase import CreateRoleUseCase
-from app.modules.auth.application.usecases.role.delete_role_usecase import DeleteRoleUseCase
-from app.modules.auth.application.usecases.role.list_roles_usecase import ListRolesUseCase
-from app.modules.auth.application.usecases.role.remove_permission_from_role_usecase import RemovePermissionFromRoleUseCase
-from app.modules.auth.application.usecases.role.update_role_usecase import UpdateRoleUseCase
+from app.modules.auth.application.usecases.role.add_permission_to_role_usecase import (
+    AddPermissionToRoleUseCase,
+)
+from app.modules.auth.application.usecases.role.get_role_by_id_usecase import (
+    GetRoleByIdUseCase,
+)
+from app.modules.auth.application.usecases.role.create_role_usecase import (
+    CreateRoleUseCase,
+)
+from app.modules.auth.application.usecases.role.delete_role_usecase import (
+    DeleteRoleUseCase,
+)
+from app.modules.auth.application.usecases.role.list_roles_usecase import (
+    ListRolesUseCase,
+)
+from app.modules.auth.application.usecases.role.remove_permission_from_role_usecase import (
+    RemovePermissionFromRoleUseCase,
+)
+from app.modules.auth.application.usecases.role.update_role_usecase import (
+    UpdateRoleUseCase,
+)
 from app.shared.infrastructure.database.session import get_db
 
-from app.modules.auth.infrastructure.repositories.role_repository_impl import RoleRepositoryImpl
+from app.modules.auth.infrastructure.repositories.role_repository_impl import (
+    RoleRepositoryImpl,
+)
 
 
 """
@@ -25,6 +41,7 @@ com suas dependências (repositories, services, etc.)
 # REPOSITORY DEPENDENCY
 # ============================================================================
 
+
 def get_role_repository(
     db: AsyncSession = Depends(get_db),
 ) -> RoleRepositoryImpl:
@@ -35,6 +52,7 @@ def get_role_repository(
 # ============================================================================
 # USE CASE DEPENDENCIES - CRUD
 # ============================================================================
+
 
 def get_create_role_usecase(
     role_repo: RoleRepositoryImpl = Depends(get_role_repository),
@@ -74,6 +92,7 @@ def get_delete_role_usecase(
 # ============================================================================
 # USE CASE DEPENDENCIES - PERMISSIONS
 # ============================================================================
+
 
 def get_add_permission_to_role_usecase(
     role_repo: RoleRepositoryImpl = Depends(get_role_repository),

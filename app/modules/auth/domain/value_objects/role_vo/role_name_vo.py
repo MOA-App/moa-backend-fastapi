@@ -1,9 +1,11 @@
 from dataclasses import dataclass
 import re
 
+
 @dataclass(frozen=True)
 class RoleName:
     """Value Object para Nome de Role"""
+
     value: str
 
     def __post_init__(self):

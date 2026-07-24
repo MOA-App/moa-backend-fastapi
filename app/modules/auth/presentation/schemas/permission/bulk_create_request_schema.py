@@ -10,27 +10,16 @@ class BulkCreatePermissionsRequest(BaseModel):
     """
 
     permissions: List[CreatePermissionRequest] = Field(
-        ...,
-        min_length=1,
-        description="Lista de permissões a serem criadas"
+        ..., min_length=1, description="Lista de permissões a serem criadas"
     )
 
     model_config = ConfigDict(
-        json_schema_extra = {
+        json_schema_extra={
             "example": {
                 "permissions": [
-                    {
-                        "nome": "users.create",
-                        "descricao": "Criar usuários"
-                    },
-                    {
-                        "nome": "users.read",
-                        "descricao": "Ler usuários"
-                    },
-                    {
-                        "nome": "users.update",
-                        "descricao": "Atualizar usuários"
-                    }
+                    {"nome": "users.create", "descricao": "Criar usuários"},
+                    {"nome": "users.read", "descricao": "Ler usuários"},
+                    {"nome": "users.update", "descricao": "Atualizar usuários"},
                 ]
             }
         }

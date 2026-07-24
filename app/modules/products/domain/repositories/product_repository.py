@@ -60,4 +60,3 @@ class ProductRepositoryInterface(ABC):
     async def count_by_category(self, category_id: str) -> int:
         """Conta produtos de uma categoria"""
         pass
-

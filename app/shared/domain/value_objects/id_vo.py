@@ -5,6 +5,7 @@ from dataclasses import dataclass
 @dataclass(frozen=True, eq=False)
 class EntityId:
     """Value Object para ID de Entidade"""
+
     value: UUID
 
     @staticmethod

@@ -1,23 +1,32 @@
 from typing import List
 
-from app.modules.auth.application.dtos.permission.permission_bulk import BulkCreatePermissionsDTO
-from app.modules.auth.application.dtos.permission.permission_outputs import PermissionResponseDTO
-from app.modules.auth.application.dtos.permission.permission_bulk import BulkCreatePermissionsResponseDTO
-from app.modules.auth.domain.exceptions.auth_exceptions import InvalidPermissionFormatException
-from app.modules.auth.infrastructure.exceptions.repository_exception import RepositoryException
+from app.modules.auth.application.dtos.permission.permission_bulk import (
+    BulkCreatePermissionsDTO,
+)
+from app.modules.auth.application.dtos.permission.permission_outputs import (
+    PermissionResponseDTO,
+)
+from app.modules.auth.application.dtos.permission.permission_bulk import (
+    BulkCreatePermissionsResponseDTO,
+)
+from app.modules.auth.domain.exceptions.auth_exceptions import (
+    InvalidPermissionFormatException,
+)
+from app.modules.auth.infrastructure.exceptions.repository_exception import (
+    RepositoryException,
+)
 
 from ....domain.repositories.permission_repository import PermissionRepository
 from ....domain.entities.permission_entity import Permission
 from ....domain.value_objects.permission_vo.permission_name_vo import PermissionName
 
-class BulkCreatePermissionsUseCase:
 
+class BulkCreatePermissionsUseCase:
     def __init__(self, permission_repository: PermissionRepository):
         self.permission_repository = permission_repository
 
     async def execute(
-        self,
-        dto: BulkCreatePermissionsDTO
+        self, dto: BulkCreatePermissionsDTO
     ) -> BulkCreatePermissionsResponseDTO:
 
         created: List[PermissionResponseDTO] = []
@@ -33,8 +42,7 @@ class BulkCreatePermissionsUseCase:
                     continue
 
                 permission = Permission.create(
-                    nome=permission_name,
-                    descricao=perm_dto.descricao
+                    nome=permission_name, descricao=perm_dto.descricao
                 )
 
                 saved = await self.permission_repository.create(permission)
@@ -46,7 +54,7 @@ class BulkCreatePermissionsUseCase:
                         descricao=saved.descricao,
                         data_criacao=saved.data_criacao,
                         resource=saved.nome.get_base_resource(),
-                        action=saved.nome.action
+                        action=saved.nome.action,
                     )
                 )
 
@@ -62,5 +70,5 @@ class BulkCreatePermissionsUseCase:
             errors=errors,
             total_created=len(created),
             total_skipped=len(skipped),
-            total_errors=len(errors)
+            total_errors=len(errors),
         )

@@ -1,7 +1,9 @@
 from dataclasses import dataclass, field
 from typing import Iterable, List
 
-from app.modules.auth.domain.value_objects.permission_vo.permission_name_vo import PermissionName
+from app.modules.auth.domain.value_objects.permission_vo.permission_name_vo import (
+    PermissionName,
+)
 from app.shared.domain.value_objects.id_vo import EntityId
 from app.modules.auth.domain.entities.permission_entity import Permission
 from ..value_objects.role_vo.role_name_vo import RoleName
@@ -10,7 +12,7 @@ from ..value_objects.role_vo.role_name_vo import RoleName
 @dataclass(eq=False)
 class Role:
     """Entidade Role (Papel/Função) do Domínio"""
-    
+
     id: EntityId
     nome: RoleName
     _permissions: List[Permission] = field(default_factory=list, repr=False)
@@ -18,11 +20,7 @@ class Role:
     # ---------- Factories ----------
     @classmethod
     def create(cls, nome: RoleName) -> "Role":
-        return cls(
-            id=EntityId.generate(),
-            nome=nome,
-            _permissions=[]
-        )
+        return cls(id=EntityId.generate(), nome=nome, _permissions=[])
 
     @classmethod
     def reconstruct(
@@ -49,25 +47,17 @@ class Role:
         self._permissions.append(permission)
 
     def remove_permission(self, permission: Permission) -> None:
-        self._permissions = [
-            p for p in self._permissions if p.id != permission.id
-        ]
+        self._permissions = [p for p in self._permissions if p.id != permission.id]
 
     def clear_permissions(self) -> None:
         self._permissions.clear()
 
     def has_permission(self, permission_name: PermissionName) -> bool:
-        return any(
-            p.nome == permission_name
-            for p in self._permissions
-        )
+        return any(p.nome == permission_name for p in self._permissions)
 
     def permissions_by_resource(self, resource: str) -> List[Permission]:
         resource = resource.lower()
-        return [
-            p for p in self._permissions
-            if p.is_for_resource(resource)
-        ]
+        return [p for p in self._permissions if p.is_for_resource(resource)]
 
     # ---------- Getters seguros ----------
 

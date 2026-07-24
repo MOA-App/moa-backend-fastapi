@@ -5,10 +5,18 @@ from sqlalchemy.future import select
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 from app.modules.auth.domain.entities.role_entity import Role
-from app.modules.auth.domain.exceptions.auth_exceptions import RoleAlreadyAssignedException, RoleAlreadyExistsException, RoleNotAssignedException, RoleNotFoundException, PermissionNotFoundException
+from app.modules.auth.domain.exceptions.auth_exceptions import (
+    RoleAlreadyAssignedException,
+    RoleAlreadyExistsException,
+    RoleNotAssignedException,
+    RoleNotFoundException,
+    PermissionNotFoundException,
+)
 from app.modules.auth.domain.value_objects.role_vo.role_name_vo import RoleName
 from app.modules.auth.domain.repositories.role_repository import RoleRepository
-from app.modules.auth.infrastructure.exceptions.repository_exception import RepositoryException
+from app.modules.auth.infrastructure.exceptions.repository_exception import (
+    RepositoryException,
+)
 from app.shared.domain.value_objects.id_vo import EntityId
 
 from app.modules.auth.infrastructure.models.role_model import RoleModel
@@ -41,9 +49,7 @@ class RoleRepositoryImpl(RoleRepository):
 
         except IntegrityError:
             await self._session.rollback()
-            raise RoleAlreadyExistsException(
-                f"Role '{role.nome.value}' já existe."
-            )
+            raise RoleAlreadyExistsException(f"Role '{role.nome.value}' já existe.")
         except SQLAlchemyError as e:
             await self._session.rollback()
             raise RepositoryException(f"Erro ao criar role: {e}") from e
@@ -126,9 +132,7 @@ class RoleRepositoryImpl(RoleRepository):
             raise
         except IntegrityError:
             await self._session.rollback()
-            raise RoleAlreadyExistsException(
-                f"Role '{role.nome.value}' já existe."
-            )
+            raise RoleAlreadyExistsException(f"Role '{role.nome.value}' já existe.")
         except SQLAlchemyError as e:
             await self._session.rollback()
             raise RepositoryException(f"Erro ao atualizar role: {e}") from e
@@ -190,9 +194,7 @@ class RoleRepositoryImpl(RoleRepository):
             raise
         except SQLAlchemyError as e:
             await self._session.rollback()
-            raise RepositoryException(
-                f"Erro ao associar permissão à role: {e}"
-            ) from e
+            raise RepositoryException(f"Erro ao associar permissão à role: {e}") from e
 
     async def remove_permission_from_role(
         self,
@@ -222,9 +224,7 @@ class RoleRepositoryImpl(RoleRepository):
             raise
         except SQLAlchemyError as e:
             await self._session.rollback()
-            raise RepositoryException(
-                f"Erro ao remover permissão da role: {e}"
-            ) from e
+            raise RepositoryException(f"Erro ao remover permissão da role: {e}") from e
 
     # =========================================================================
     # PRIVATE HELPERS

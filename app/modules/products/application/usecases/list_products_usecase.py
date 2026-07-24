@@ -15,7 +15,7 @@ class ListProductsUseCase:
         skip: int = 0,
         limit: int = 100,
         category_id: Optional[str] = None,
-        active_only: bool = False
+        active_only: bool = False,
     ) -> List[ProductResponseDTO]:
         """
         Lista produtos com filtros opcionais.
@@ -58,4 +58,3 @@ class ListProductsUseCase:
     async def count_by_category(self, category_id: str) -> int:
         """Retorna o total de produtos de uma categoria"""
         return await self.repository.count_by_category(category_id)
-

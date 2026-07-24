@@ -27,4 +27,6 @@ class AddPermissionToRoleUseCase:
         role_id = EntityId(dto.role_id)
         permission_id = EntityId(dto.permission_id)
 
-        return await self._role_repository.add_permission_to_role(role_id, permission_id)
+        return await self._role_repository.add_permission_to_role(
+            role_id, permission_id
+        )

@@ -10,7 +10,7 @@ class RoleListResponse(BaseModel):
     total: int = Field(..., description="Quantidade total de roles")
 
     model_config = ConfigDict(
-        json_schema_extra = {
+        json_schema_extra={
             "example": {
                 "roles": [
                     {

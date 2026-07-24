@@ -3,6 +3,7 @@ from pydantic import BaseModel
 
 T = TypeVar("T")
 
+
 class PaginatedResult(BaseModel, Generic[T]):
     items: List[T]
     total: int

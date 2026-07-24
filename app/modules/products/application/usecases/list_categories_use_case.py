@@ -16,4 +16,3 @@ class ListCategoriesUseCase:
 
         # Retornar lista de DTOs
         return [CategoryResponseDTO.model_validate(category) for category in categories]
-

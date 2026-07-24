@@ -12,10 +12,12 @@ from ...application.usecases.get_product_by_sku_usecase import GetProductBySkuUs
 from ...application.usecases.update_product_usecase import UpdateProductUseCase
 from ...application.usecases.delete_product_usecase import DeleteProductUseCase
 from ...infrastructure.repositories.product_repository_impl import ProductRepositoryImpl
-from ...infrastructure.repositories.category_repository_impl import CategoryRepositoryImpl
+from ...infrastructure.repositories.category_repository_impl import (
+    CategoryRepositoryImpl,
+)
 from ...domain.exceptions.product_exceptions import (
     ProductNotFoundException,
-    ProductAlreadyExistsException
+    ProductAlreadyExistsException,
 )
 from ...domain.exceptions.category_exceptions import CategoryNotFoundException
 from ..schemas.product_schemas import (
@@ -35,7 +37,9 @@ def get_product_repository(db: AsyncSession = Depends(get_db)) -> ProductReposit
     return ProductRepositoryImpl(db)
 
 
-def get_category_repository(db: AsyncSession = Depends(get_db)) -> CategoryRepositoryImpl:
+def get_category_repository(
+    db: AsyncSession = Depends(get_db),
+) -> CategoryRepositoryImpl:
     """Dependency injection para repositório de categorias"""
     return CategoryRepositoryImpl(db)
 
@@ -55,44 +59,35 @@ def get_category_repository(db: AsyncSession = Depends(get_db)) -> CategoryRepos
 async def create_product(
     data: CreateProductDTO,
     product_repository: ProductRepositoryImpl = Depends(get_product_repository),
-    category_repository: CategoryRepositoryImpl = Depends(get_category_repository)
+    category_repository: CategoryRepositoryImpl = Depends(get_category_repository),
 ):
     """Endpoint para criar um novo produto"""
     try:
         use_case = CreateProductUseCase(product_repository, category_repository)
         return await use_case.execute(data)
     except ProductAlreadyExistsException as e:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
     except CategoryNotFoundException as e:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
 
 
 @router.get(
     "/",
     response_model=List[ProductResponseDTO],
     summary="Listar produtos",
-    description="Lista todos os produtos com filtros opcionais"
+    description="Lista todos os produtos com filtros opcionais",
 )
 async def list_products(
     skip: int = Query(0, ge=0, description="Número de registros a pular"),
     limit: int = Query(100, ge=1, le=1000, description="Limite de registros"),
     category_id: Optional[str] = Query(None, description="Filtrar por categoria"),
     active_only: bool = Query(False, description="Apenas produtos ativos"),
-    repository: ProductRepositoryImpl = Depends(get_product_repository)
+    repository: ProductRepositoryImpl = Depends(get_product_repository),
 ):
     """Endpoint para listar produtos com paginação e filtros"""
     use_case = ListProductsUseCase(repository)
     return await use_case.execute(
-        skip=skip,
-        limit=limit,
-        category_id=category_id,
-        active_only=active_only
+        skip=skip, limit=limit, category_id=category_id, active_only=active_only
     )
 
 
@@ -100,11 +95,13 @@ async def list_products(
     "/search",
     response_model=List[ProductResponseDTO],
     summary="Buscar produtos por nome",
-    description="Busca produtos por nome (parcial)"
+    description="Busca produtos por nome (parcial)",
 )
 async def search_products(
-    name: str = Query(..., min_length=1, description="Nome ou parte do nome do produto"),
-    repository: ProductRepositoryImpl = Depends(get_product_repository)
+    name: str = Query(
+        ..., min_length=1, description="Nome ou parte do nome do produto"
+    ),
+    repository: ProductRepositoryImpl = Depends(get_product_repository),
 ):
     """Endpoint para buscar produtos por nome"""
     use_case = ListProductsUseCase(repository)
@@ -122,17 +119,14 @@ async def search_products(
 )
 async def get_product_by_sku(
     sku: str = Query(..., min_length=1, description="Código SKU do produto"),
-    repository: ProductRepositoryImpl = Depends(get_product_repository)
+    repository: ProductRepositoryImpl = Depends(get_product_repository),
 ):
     """Endpoint para buscar produto por SKU"""
     try:
         use_case = GetProductBySkuUseCase(repository)
         return await use_case.execute(sku)
     except ProductNotFoundException as e:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
 
 
 @router.get(
@@ -145,18 +139,14 @@ async def get_product_by_sku(
     },
 )
 async def get_product(
-    product_id: str,
-    repository: ProductRepositoryImpl = Depends(get_product_repository)
+    product_id: str, repository: ProductRepositoryImpl = Depends(get_product_repository)
 ):
     """Endpoint para buscar produto por ID"""
     try:
         use_case = GetProductByIdUseCase(repository)
         return await use_case.execute(product_id)
     except ProductNotFoundException as e:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
 
 
 @router.put(
@@ -174,27 +164,18 @@ async def update_product(
     product_id: str,
     data: UpdateProductDTO,
     product_repository: ProductRepositoryImpl = Depends(get_product_repository),
-    category_repository: CategoryRepositoryImpl = Depends(get_category_repository)
+    category_repository: CategoryRepositoryImpl = Depends(get_category_repository),
 ):
     """Endpoint para atualizar um produto"""
     try:
         use_case = UpdateProductUseCase(product_repository, category_repository)
         return await use_case.execute(product_id, data)
     except ProductNotFoundException as e:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
     except ProductAlreadyExistsException as e:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
     except CategoryNotFoundException as e:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
 
 
 @router.delete(
@@ -207,29 +188,25 @@ async def update_product(
     },
 )
 async def delete_product(
-    product_id: str,
-    repository: ProductRepositoryImpl = Depends(get_product_repository)
+    product_id: str, repository: ProductRepositoryImpl = Depends(get_product_repository)
 ):
     """Endpoint para excluir um produto"""
     try:
         use_case = DeleteProductUseCase(repository)
         await use_case.execute(product_id)
     except ProductNotFoundException as e:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
 
 
 @router.get(
     "/stats/count",
     response_model=Union[ProductStatsByCategorySchema, ProductStatsTotalSchema],
     summary="Contagem de produtos",
-    description="Retorna estatísticas de quantidade de produtos"
+    description="Retorna estatísticas de quantidade de produtos",
 )
 async def get_product_stats(
     category_id: Optional[str] = Query(None, description="Filtrar por categoria"),
-    repository: ProductRepositoryImpl = Depends(get_product_repository)
+    repository: ProductRepositoryImpl = Depends(get_product_repository),
 ):
     """Endpoint para obter estatísticas de produtos"""
     use_case = ListProductsUseCase(repository)

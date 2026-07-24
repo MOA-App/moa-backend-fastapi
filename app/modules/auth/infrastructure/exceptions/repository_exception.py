@@ -2,6 +2,7 @@
 Exceções de Infraestrutura (Persistência, Banco, ORM).
 """
 
+
 class InfrastructureException(Exception):
     pass
 
