@@ -8,6 +8,10 @@ from app.core.config import settings
 from app.shared.presentation.middlewares.cors_middleware import setup_cors
 from app.shared.presentation.middlewares.request_id_middleware import RequestIdMiddleware
 from app.shared.presentation.middlewares.security_headers_middleware import SecurityHeadersMiddleware
+from app.shared.presentation.middlewares.rate_limit_middleware import (
+    InMemoryRateLimiter,
+    RateLimitMiddleware,
+)
 from app.modules.auth.setup import setup_auth_module
 from app.modules.products.presentation.routes.category_routes import router as category_router
 from app.modules.products.presentation.routes.product_routes import router as product_router
@@ -69,8 +73,18 @@ register_exception_handlers(app)
 
 setup_cors(app)
 
+app.state.rate_limiter = InMemoryRateLimiter(
+    max_requests=settings.RATE_LIMIT_REQUESTS,
+    window_seconds=settings.RATE_LIMIT_WINDOW_SECONDS,
+)
+
 app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(RequestIdMiddleware)
+app.add_middleware(
+    RateLimitMiddleware,
+    max_requests=settings.RATE_LIMIT_REQUESTS,
+    window_seconds=settings.RATE_LIMIT_WINDOW_SECONDS,
+)
 
 
 # ------------------------------------------------------------------

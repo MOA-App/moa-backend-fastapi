@@ -2,6 +2,8 @@ import pytest
 from unittest.mock import AsyncMock
 
 from app.main import app as fastapi_app
+from app.core.config import settings
+from app.shared.presentation.middlewares.rate_limit_middleware import InMemoryRateLimiter
 
 
 # ============================
@@ -11,6 +13,15 @@ from app.main import app as fastapi_app
 @pytest.fixture
 def app():
     return fastapi_app
+
+
+@pytest.fixture(autouse=True)
+def reset_rate_limiter():
+    """Evita que o estado em memória de um teste afete os demais."""
+    fastapi_app.state.rate_limiter = InMemoryRateLimiter(
+        max_requests=settings.RATE_LIMIT_REQUESTS,
+        window_seconds=settings.RATE_LIMIT_WINDOW_SECONDS,
+    )
 
 
 # ============================
