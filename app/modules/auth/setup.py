@@ -5,6 +5,7 @@ from app.modules.auth.presentation.middlewares.exception_handler import validati
 from app.modules.auth.presentation.routes import permission_routes
 from app.modules.auth.presentation.routes import role_routes
 from app.modules.auth.presentation.routes import user_routes
+from app.modules.auth.presentation.routes import auth_routes
 
 
 def setup_auth_module(app: FastAPI) -> None:
@@ -17,6 +18,8 @@ def setup_auth_module(app: FastAPI) -> None:
     """
     
     # Registrar routers
+    app.include_router(auth_routes.router)
+
     app.include_router(permission_routes.router)
 
     app.include_router(role_routes.router)

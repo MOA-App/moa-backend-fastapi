@@ -4,13 +4,6 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict
 
 
-class RoleSummaryResponse(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
-    id: UUID
-    name: str
-
-
 class UserResponse(BaseModel):
     """
     Resposta padrão de usuário.
@@ -23,7 +16,7 @@ class UserResponse(BaseModel):
     email: str
     is_active: bool
     created_at: datetime
-    roles: list[RoleSummaryResponse] = []
+    roles: list[str] = []
 
 
 class UserListResponse(BaseModel):

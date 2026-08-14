@@ -16,6 +16,7 @@ from app.modules.auth.domain.services.password_hasher_interface import (
 from app.modules.auth.domain.value_objects.user_vo.user_email_vo import Email
 from app.modules.auth.domain.value_objects.user_vo.user_name_vo import UserName
 from app.modules.auth.domain.value_objects.user_vo.user_password_vo import Password
+from app.modules.auth.domain.value_objects.user_vo.user_plainpassword_vo import PlainPassword
 from app.shared.domain.value_objects.id_vo import EntityId
 
 
@@ -76,9 +77,8 @@ class UpdateUserUseCase:
 
         # Senha
         if dto.password is not None:
-            hashed_password = self._password_hasher.hash(
-                dto.password
-            )
+            plain_password = PlainPassword(dto.password)
+            hashed_password = self._password_hasher.hash(plain_password.value)
 
             user.change_password(
                 Password(hashed_password)

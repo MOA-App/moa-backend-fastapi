@@ -12,6 +12,7 @@ from app.modules.auth.domain.services.password_hasher_interface import PasswordH
 from app.modules.auth.domain.value_objects.user_vo.user_email_vo import Email
 from app.modules.auth.domain.value_objects.user_vo.user_name_vo import UserName
 from app.modules.auth.domain.value_objects.user_vo.user_password_vo import Password
+from app.modules.auth.domain.value_objects.user_vo.user_plainpassword_vo import PlainPassword
 
 
 class CreateUserUseCase:
@@ -44,7 +45,8 @@ class CreateUserUseCase:
                 f"User with email '{email}' already exists."
             )
 
-        hashed_password = self._password_hasher.hash(password)
+        plain_password = PlainPassword(password)
+        hashed_password = self._password_hasher.hash(plain_password.value)
 
         user = User.create(
             name=UserName(name),

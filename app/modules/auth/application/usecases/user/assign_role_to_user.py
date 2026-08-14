@@ -8,9 +8,7 @@ from app.modules.auth.domain.exceptions.auth_exceptions import (
 from app.modules.auth.domain.repositories.user_repository import (
     UserRepositoryInterface,
 )
-from app.modules.auth.domain.repositories.role_repository import (
-    RoleRepositoryInterface,
-)
+from app.modules.auth.domain.repositories.role_repository import RoleRepository
 from app.shared.domain.value_objects.id_vo import EntityId
 
 
@@ -22,7 +20,7 @@ class AssignRoleToUserUseCase:
     def __init__(
         self,
         user_repository: UserRepositoryInterface,
-        role_repository: RoleRepositoryInterface,
+        role_repository: RoleRepository,
     ):
         self._user_repository = user_repository
         self._role_repository = role_repository
@@ -45,7 +43,7 @@ class AssignRoleToUserUseCase:
                 f"User '{user_id}' not found."
             )
 
-        role = await self._role_repository.get_by_id(
+        role = await self._role_repository.find_by_id(
             EntityId.from_string(role_id)
         )
 

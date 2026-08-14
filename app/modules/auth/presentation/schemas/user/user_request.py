@@ -53,6 +53,10 @@ class UpdateUserRequest(BaseModel):
 
     email: EmailStr | None = None
 
+    password: str | None = Field(default=None, min_length=8, max_length=255)
+
+    is_active: bool | None = None
+
 
 class ChangePasswordRequest(BaseModel):
     """
@@ -91,3 +95,8 @@ class AssignRoleRequest(BaseModel):
     )
 
     role_id: str
+
+
+class LoginRequest(BaseModel):
+    email: EmailStr
+    password: str = Field(..., min_length=1, max_length=255)

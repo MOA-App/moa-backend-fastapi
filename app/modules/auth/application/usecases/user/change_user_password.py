@@ -12,6 +12,7 @@ from app.modules.auth.domain.services.password_hasher_interface import (
     PasswordHasherInterface,
 )
 from app.modules.auth.domain.value_objects.user_vo.user_password_vo import Password
+from app.modules.auth.domain.value_objects.user_vo.user_plainpassword_vo import PlainPassword
 from app.shared.domain.value_objects.id_vo import EntityId
 
 
@@ -55,9 +56,8 @@ class ChangeUserPasswordUseCase:
                 "Current password is incorrect."
             )
 
-        hashed_password = self._password_hasher.hash(
-            new_password
-        )
+        plain_password = PlainPassword(new_password)
+        hashed_password = self._password_hasher.hash(plain_password.value)
 
         user.change_password(
             Password(hashed_password)
