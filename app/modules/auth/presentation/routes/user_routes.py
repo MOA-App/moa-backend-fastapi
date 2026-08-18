@@ -54,7 +54,6 @@ def _to_response(user) -> UserResponse:
     "/",
     response_model=UserResponse,
     status_code=status.HTTP_201_CREATED,
-    dependencies=[Depends(require_permission("users:create"))],
 )
 async def create_user(
     request: CreateUserRequest,
