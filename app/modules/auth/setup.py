@@ -1,7 +1,11 @@
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 
-from app.modules.auth.presentation.middlewares.exception_handler import validation_exception_handler
+from app.modules.auth.domain.exceptions.auth_exceptions import AuthException
+from app.modules.auth.presentation.middlewares.exception_handler import (
+    domain_exception_handler,
+    validation_exception_handler,
+)
 from app.modules.auth.presentation.routes import permission_routes
 from app.modules.auth.presentation.routes import role_routes
 from app.modules.auth.presentation.routes import user_routes
@@ -28,3 +32,4 @@ def setup_auth_module(app: FastAPI) -> None:
 
     # Registrar exception handlers
     app.add_exception_handler(RequestValidationError, validation_exception_handler)
+    app.add_exception_handler(AuthException, domain_exception_handler)

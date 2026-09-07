@@ -8,10 +8,12 @@ from fastapi.responses import JSONResponse
 from pydantic import ValidationError
 
 from app.modules.auth.domain.exceptions.auth_exceptions import (
+    AuthException,
     DomainValidationException,
 
     # Permission
     PermissionAlreadyExistsException,
+    PermissionException,
     PermissionNotFoundException,
 
     # Role
@@ -25,10 +27,9 @@ from app.modules.auth.domain.exceptions.auth_exceptions import (
     UserNotFoundException,
     UserAlreadyActiveException,
     UserAlreadyInactiveException,
-)
-
-from app.modules.auth.infrastructure.exceptions.repository_exception import (
-    RepositoryException,
+    UserInactiveException,
+    InvalidCredentialsException,
+    PasswordMismatchException,
 )
 
 logger = logging.getLogger(__name__)
@@ -88,7 +89,7 @@ async def validation_exception_handler(
 
 async def domain_exception_handler(
     _request: Request,
-    exc: Exception,
+    exc: AuthException,
 ) -> JSONResponse:
 
     # ------------------------------------------------------------------------
@@ -136,7 +137,9 @@ async def domain_exception_handler(
         exc,
         (
             DomainValidationException,
+            PermissionException,
             RoleNotAssignedException,
+            PasswordMismatchException,
         ),
     ):
         return _base_error_response(
@@ -145,26 +148,28 @@ async def domain_exception_handler(
         )
 
     # ------------------------------------------------------------------------
-    # REPOSITORY
+    # UNAUTHORIZED / FORBIDDEN
     # ------------------------------------------------------------------------
 
-    if isinstance(exc, RepositoryException):
-        logger.exception(exc)
-
+    if isinstance(exc, InvalidCredentialsException):
         return _base_error_response(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            message="Erro ao acessar os dados. Tente novamente mais tarde.",
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            message=str(exc),
+        )
+
+    if isinstance(exc, UserInactiveException):
+        return _base_error_response(
+            status_code=status.HTTP_403_FORBIDDEN,
+            message=str(exc),
         )
 
     # ------------------------------------------------------------------------
-    # FALLBACK
+    # OTHER AUTH DOMAIN ERRORS
     # ------------------------------------------------------------------------
 
-    logger.exception(exc)
-
     return _base_error_response(
-        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        message="Erro interno do servidor",
+        status_code=status.HTTP_400_BAD_REQUEST,
+        message=str(exc),
     )
 
 
